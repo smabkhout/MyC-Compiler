@@ -70,6 +70,12 @@ char * type2string (int c) {
     }  
 };
 
+int op_code(int OPD, int OPERATOR, int OPG) {
+  
+  printf("%s\n", OPD);
+  return 0;
+};
+
  // dirty trick to end function init_glob_var() definition (see rule po : PO)
 void end_glob_var_decl(){
   static int unfinished=1;
@@ -119,11 +125,13 @@ po: PO {end_glob_var_decl();}  // dirty trick to end function init_glob_var() de
 fun_head : ID po PF            {
   // Pas de déclaration de fonction à l'intérieur de fonctions !
   if (depth>0) yyerror("Function must be declared at top level~!\n");
+  printf("void pcode_%s() ", $1);
   }
 
 | ID po params PF              {
    // Pas de déclaration de fonction à l'intérieur de fonctions !
   if (depth>0) yyerror("Function must be declared at top level~!\n");
+  printf("void pcode_%s() ", $1);
  }
 ;
 
@@ -137,9 +145,9 @@ vir : VIR                      {}
 fun_body : fao block faf       {}
 ;
 
-fao : AO                       {}
+fao : AO                       { printf("{\n"); }
 ;
-faf : AF                       {}
+faf : AF                       { printf("}\n"); }
 ;
 
 
@@ -248,19 +256,20 @@ while : WHILE                 {}
 
 // V. Expressions
 
+
 exp
 // V.1 Exp. arithmetiques
 : MOINS exp %prec UNA         {}
          // -x + y lue comme (- x) + y  et pas - (x + y)
-| exp PLUS exp                {}
-| exp MOINS exp               {}
-| exp STAR exp                {}
-| exp DIV exp                 {}
+| exp PLUS exp                { printf("ADDI\n"); }
+| exp MOINS exp               { printf("SUBI\n"); }
+| exp STAR exp                { printf("MULTI\n"); }
+| exp DIV exp                 { printf("DIVI\n"); }
 | PO exp PF                   {}
 | ID                          {}
 | app                         {}
-| NUM                         {}
-| DEC                         {}
+| NUM                         { printf("LOADI(%i)\n", $1); }
+| DEC                         { printf("LOADF(%f), %i\n", $1, op_code($1, 5, 7)); }
 
 
 // V.2. Booléens
