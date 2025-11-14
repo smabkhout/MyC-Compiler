@@ -70,10 +70,22 @@ char * type2string (int c) {
     }  
 };
 
-int op_code(int OPD, int OPERATOR, int OPG) {
+void op_code(int type1, int operation, int type2) {
   
-  printf("%s\n", OPD);
-  return 0;
+  const char* op_int[] = {"ADDI", "SUBI", "MULTI", "DIVI"};
+    const char* op_float[] = {"ADDF", "SUBF", "MULTF", "DIVF"};
+    
+    if (type1 == INT && type2 == INT) {
+        printf("%s\n", op_int[operation]);
+    } else if (type1 == FLOAT && type2 == FLOAT) {
+        printf("%s\n", op_float[operation]);
+    } else if (type1 == INT && type2 == FLOAT) {
+        printf("I2F1\n");  // Convertit le premier opérande (sous-sommet)
+        printf("%s\n", op_float[operation]);
+    } else if (type1 == FLOAT && type2 == INT) {
+        printf("I2F2\n");  // Convertit le second opérande (sommet)
+        printf("%s\n", op_float[operation]);
+    }
 };
 
  // dirty trick to end function init_glob_var() definition (see rule po : PO)
@@ -261,10 +273,10 @@ exp
 // V.1 Exp. arithmetiques
 : MOINS exp %prec UNA         {}
          // -x + y lue comme (- x) + y  et pas - (x + y)
-| exp PLUS exp                { printf("ADDI\n"); }
-| exp MOINS exp               { printf("SUBI\n"); }
-| exp STAR exp                { printf("MULTI\n"); }
-| exp DIV exp                 { printf("DIVI\n"); }
+| exp PLUS exp                { op_code($1, 0, $3); }
+| exp MOINS exp               { op_code($1, 1, $3); }
+| exp STAR exp                { op_code($1, 2, $3); }
+| exp DIV exp                 { op_code($1, 3, $3); }
 | PO exp PF                   {}
 | ID                          {}
 | app                         {}
