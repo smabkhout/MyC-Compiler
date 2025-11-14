@@ -15,6 +15,5 @@ void init_glob_var(){
 }
 
 void pcode_main() {
-type error
-LOADF(1.700000), 0
+LOADF(1.700000)
 }

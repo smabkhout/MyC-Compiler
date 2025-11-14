@@ -281,7 +281,7 @@ exp
 | ID                          {}
 | app                         {}
 | NUM                         { printf("LOADI(%i)\n", $1); }
-| DEC                         { printf("LOADF(%f), %i\n", $1, op_code($1, 5, 7)); }
+| DEC                         { printf("LOADF(%f)\n", $1); }
 
 
 // V.2. Booléens
