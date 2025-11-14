@@ -275,14 +275,14 @@ while : WHILE                 {}
 exp
 // V.1 Exp. arithmetiques
 : MOINS exp %prec UNA         {$$ = $2;
-        if ($2 == 0) {
-            printf("MINUSI\n");
-        } else if ($2 == 1) {
-            printf("MINUSF\n");
-        } else {
-            printf("erreur de type");
-        }
-        }
+                                if ($2 == 0) {
+                                    printf("MINUSI\n");
+                                }   else if ($2 == 1) {
+                                    printf("MINUSF\n");
+                                }   else {
+                                    printf("erreur de type");
+                                }
+                              }
          // -x + y lue comme (- x) + y  et pas - (x + y)
 | exp PLUS exp                { $$=op_code($1, 0, $3); }
 | exp MOINS exp               { $$=op_code($1, 1, $3); }
