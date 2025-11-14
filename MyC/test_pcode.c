@@ -12,21 +12,13 @@ return stack[sp-1].int_value;
 
 
 void init_glob_var(){
+// Declare x of type int with offset 0 at depth 0
+LOADI(0)
+
 }
 
 void pcode_main() {
-LOADI(5)
-MINUSI
 LOADI(4)
-LOADI(8)
-MULTI
-ADDI
-LOADI(7)
-ADDI
-LOADI(6)
-LOADI(4)
-DIVI
-SUBI
-LOADI(6)
+LOADI(2)
 ADDI
 }
