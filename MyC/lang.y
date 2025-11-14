@@ -183,7 +183,17 @@ decl: var_decl                  {}
 var_decl : type vlist          { $2=$1; }
 ;
 
-vlist: vlist vir ID            {} // récursion gauche pour traiter les variables déclararées de gauche à droite
+vlist: vlist vir ID            {
+  $$ = $1;
+  printf("// Declare %s of type %s with offset 0 at depth %d\n", $3, type2string($<int_value>0), depth);
+  if ($<int_value>0 == INT) {
+    printf("LOADI(0)\n\n");
+  } else if ($<int_value>0 == FLOAT) {
+    printf("LOADF(0.0)\n\n");
+  } else {
+    printf("erreur de type");
+  }
+} // récursion gauche pour traiter les variables déclararées de gauche à droite
 | ID                           {
   printf("// Declare %s of type %s with offset 0 at depth %d\n", $1, type2string($<int_value>0), depth);
   if ($<int_value>0 == INT) {
@@ -193,7 +203,7 @@ vlist: vlist vir ID            {} // récursion gauche pour traiter les variable
   } else {
     printf("erreur de type");
   }
-}
+  }
 ;
 
 type

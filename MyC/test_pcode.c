@@ -12,7 +12,13 @@ return stack[sp-1].int_value;
 
 
 void init_glob_var(){
-// Declare x of type int with offset 0 at depth 0
+// Declare x of type float with offset 0 at depth 0
+LOADF(0.0)
+
+// Declare y of type float with offset 0 at depth 0
+LOADF(0.0)
+
+// Declare z of type int with offset 0 at depth 0
 LOADI(0)
 
 }
