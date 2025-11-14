@@ -70,20 +70,24 @@ char * type2string (int c) {
     }  
 };
 
-void op_code(int type1, int operation, int type2) {
+int op_code(int type1, int operation, int type2) {
   const char* op_int[] = {"ADDI", "SUBI", "MULTI", "DIVI"};
     const char* op_float[] = {"ADDF", "SUBF", "MULTF", "DIVF"};
     
     if (type1 == 0 && type2 == 0) {
         printf("%s\n", op_int[operation]);
+        return 0;
     } else if (type1 == 1 && type2 == 1) {
         printf("%s\n", op_float[operation]);
+        return 1;
     } else if (type1 == 0 && type2 == 1) {
         printf("I2F1 // converting first arg to float\n");  
         printf("%s\n", op_float[operation]);
+        return 1;
     } else if (type1 == 1 && type2 == 0) {
         printf("I2F2 // converting second arg to float\n");
         printf("%s\n", op_float[operation]);
+        return 1;
     }
 };
 
@@ -272,11 +276,11 @@ exp
 // V.1 Exp. arithmetiques
 : MOINS exp %prec UNA         {}
          // -x + y lue comme (- x) + y  et pas - (x + y)
-| exp PLUS exp                { op_code($1, 0, $3); }
-| exp MOINS exp               { op_code($1, 1, $3); }
-| exp STAR exp                { op_code($1, 2, $3); }
-| exp DIV exp                 { op_code($1, 3, $3); }
-| PO exp PF                   {}
+| exp PLUS exp                { $$=op_code($1, 0, $3); }
+| exp MOINS exp               { $$=op_code($1, 1, $3); }
+| exp STAR exp                { $$=op_code($1, 2, $3); }
+| exp DIV exp                 { $$=op_code($1, 3, $3); }
+| PO exp PF                   { $$=$2; }
 | ID                          {}
 | app                         {}
 | NUM                         { $$=0; printf("LOADI(%i)\n", $1); } // $$=0 pour les entiers

@@ -15,8 +15,6 @@ void init_glob_var(){
 }
 
 void pcode_main() {
-LOADI(8)
-LOADI(2)
-ADDI
-LOADF(3.500000)
-syntax error
+LOADI(5)
+LOADI(4)
+}
