@@ -71,19 +71,18 @@ char * type2string (int c) {
 };
 
 void op_code(int type1, int operation, int type2) {
-  
   const char* op_int[] = {"ADDI", "SUBI", "MULTI", "DIVI"};
     const char* op_float[] = {"ADDF", "SUBF", "MULTF", "DIVF"};
     
-    if (type1 == INT && type2 == INT) {
+    if (type1 == 0 && type2 == 0) {
         printf("%s\n", op_int[operation]);
-    } else if (type1 == FLOAT && type2 == FLOAT) {
+    } else if (type1 == 1 && type2 == 1) {
         printf("%s\n", op_float[operation]);
-    } else if (type1 == INT && type2 == FLOAT) {
-        printf("I2F1\n");  // Convertit le premier opérande (sous-sommet)
+    } else if (type1 == 0 && type2 == 1) {
+        printf("I2F1 // converting first arg to float\n");  
         printf("%s\n", op_float[operation]);
-    } else if (type1 == FLOAT && type2 == INT) {
-        printf("I2F2\n");  // Convertit le second opérande (sommet)
+    } else if (type1 == 1 && type2 == 0) {
+        printf("I2F2 // converting second arg to float\n");
         printf("%s\n", op_float[operation]);
     }
 };
@@ -280,8 +279,8 @@ exp
 | PO exp PF                   {}
 | ID                          {}
 | app                         {}
-| NUM                         { printf("LOADI(%i)\n", $1); }
-| DEC                         { printf("LOADF(%f)\n", $1); }
+| NUM                         { $$=0; printf("LOADI(%i)\n", $1); } // $$=0 pour les entiers
+| DEC                         { $$=1; printf("LOADF(%f)\n", $1); } // $$=1 pour les flottants
 
 
 // V.2. Booléens
