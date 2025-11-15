@@ -15,6 +15,7 @@ void yyerror (char* s) {
   }
 		
 int depth=0; // block depth
+int global_offset=0; //global for now
  
 
 %}
@@ -91,6 +92,34 @@ int op_code(int type1, int operation, int type2) {
     }
 };
 
+// ajoute le symbole "symbole_name" de type "type" et depth "depth" dans notre table de symboles
+void add_symbol(char* symbol_name, int type, int depth){
+  attribute att = makeSymbol(type, global_offset, depth);
+  set_symbol_value(symbol_name, att);
+  global_offset++;
+};
+
+// fonction pour deplacer le code d'affection
+void aff_func(char* symbol, int exp_type) {
+  attribute att = get_symbol_value(symbol);  
+  if (exp_type == FLOAT && att->type == INT) {
+    printf("ERREUR : Conversion implicite int->float interdite!!\n");
+  }
+  printf("// Loading global var %s adress (used at depth %d)\n", symbol, att->depth); //to be changed if the var is global or local
+  if (att->type == INT) {
+    printf("LOADI(%d) // loading offset %d of variable %s\n", att->offset, att->offset, symbol);
+  } else if (att->type == FLOAT) {
+    printf("LOADF(%d) // loading offset %d of variable %s\n", att->offset, att->offset, symbol);
+  } else {
+    printf("erreur de type lors de l'affectation.\n");
+  }
+  if (exp_type == INT && att->type == FLOAT) {
+    printf("I2F2\n");
+  }
+  printf("// Storing variable %s (right) value\n", symbol);
+  printf("STORE\n");
+};
+
  // dirty trick to end function init_glob_var() definition (see rule po : PO)
 void end_glob_var_decl(){
   static int unfinished=1;
@@ -108,7 +137,7 @@ void end_glob_var_decl(){
 %start prog  
 
 // liste de tous les type des attributs des non terminaux que vous voulez manipuler l'attribut (il faudra en ajouter plein ;-) )
-%type <type_value> type exp  typename vlist //pour pouvoir manipuler les declarations des variables gloables/locales
+%type <type_value> type exp  typename vlist block inst_list decl_list
 %type <string_value> fun_head
 
 %%
@@ -184,6 +213,7 @@ var_decl : type vlist          { $2=$1; }
 ;
 
 vlist: vlist vir ID            {
+  add_symbol($3, $<int_value>0, depth);
   $$ = $1;
   printf("// Declare %s of type %s with offset 0 at depth %d\n", $3, type2string($<int_value>0), depth);
   if ($<int_value>0 == INT) {
@@ -195,6 +225,7 @@ vlist: vlist vir ID            {
   }
 } // récursion gauche pour traiter les variables déclararées de gauche à droite
 | ID                           {
+  add_symbol($1, $<int_value>0, depth);
   printf("// Declare %s of type %s with offset 0 at depth %d\n", $1, type2string($<int_value>0), depth);
   if ($<int_value>0 == INT) {
     printf("LOADI(0)\n\n");
@@ -246,8 +277,12 @@ af : AF                       {}
 
 // IV.1 Affectations
 
-aff : ID EQ exp               {}
+aff : ID EQ exp               {
+  aff_func($1, $3);
+  printf("ID is \n");
+}
 ;
+
 
 
 // IV.2 Return

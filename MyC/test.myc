@@ -1,5 +1,6 @@
-float x, y;
-int z;
+int x;
+float y;
 void main(){
-4+2;
+x=3;
+y=5;
 }
