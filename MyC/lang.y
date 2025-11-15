@@ -75,20 +75,20 @@ int op_code(int type1, int operation, int type2) {
   const char* op_int[] = {"ADDI", "SUBI", "MULTI", "DIVI"};
     const char* op_float[] = {"ADDF", "SUBF", "MULTF", "DIVF"};
     
-    if (type1 == 0 && type2 == 0) {
+    if (type1 == INT && type2 == INT) {
         printf("%s\n", op_int[operation]);
-        return 0;
-    } else if (type1 == 1 && type2 == 1) {
+        return INT;
+    } else if (type1 == FLOAT && type2 == FLOAT) {
         printf("%s\n", op_float[operation]);
-        return 1;
-    } else if (type1 == 0 && type2 == 1) {
+        return FLOAT;
+    } else if (type1 == INT && type2 == FLOAT) {
         printf("I2F1 // converting first arg to float\n");  
         printf("%s\n", op_float[operation]);
-        return 1;
-    } else if (type1 == 1 && type2 == 0) {
+        return FLOAT;
+    } else if (type1 == FLOAT && type2 == INT) {
         printf("I2F2 // converting second arg to float\n");
         printf("%s\n", op_float[operation]);
-        return 1;
+        return FLOAT;
     }
 };
 
@@ -279,7 +279,6 @@ af : AF                       {}
 
 aff : ID EQ exp               {
   aff_func($1, $3);
-  printf("ID is \n");
 }
 ;
 
@@ -329,9 +328,9 @@ while : WHILE                 {}
 exp
 // V.1 Exp. arithmetiques
 : MOINS exp %prec UNA         {$$ = $2;
-                                if ($2 == 0) {
+                                if ($2 == INT) {
                                     printf("MINUSI\n");
-                                }   else if ($2 == 1) {
+                                }   else if ($2 == FLOAT) {
                                     printf("MINUSF\n");
                                 }   else {
                                     printf("erreur de type");
@@ -345,8 +344,8 @@ exp
 | PO exp PF                   { $$=$2; }
 | ID                          {}
 | app                         {}
-| NUM                         { $$=0; printf("LOADI(%i)\n", $1); } // $$=0 pour les entiers
-| DEC                         { $$=1; printf("LOADF(%f)\n", $1); } // $$=1 pour les flottants
+| NUM                         { $$=INT; printf("LOADI(%i)\n", $1); } // $$=0 pour les entiers
+| DEC                         { $$=FLOAT; printf("LOADF(%f)\n", $1); } // $$=1 pour les flottants
 
 
 // V.2. Booléens

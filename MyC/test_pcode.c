@@ -15,20 +15,26 @@ void init_glob_var(){
 // Declare x of type int with offset 0 at depth 0
 LOADI(0)
 
+// Declare z of type int with offset 0 at depth 0
+LOADI(0)
+
 // Declare y of type float with offset 0 at depth 0
+LOADF(0.0)
+
+// Declare w of type float with offset 0 at depth 0
 LOADF(0.0)
 
 }
 
 void pcode_main() {
-LOADF(3.500000)
+LOADI(3)
 // Loading global var x adress (used at depth 0)
 LOADI(0) // loading offset 0 of variable x
 // Storing variable x (right) value
 STORE
-LOADI(5)
+LOADF(2.500000)
 // Loading global var y adress (used at depth 0)
-LOADF(1) // loading offset 1 of variable y
+LOADF(2) // loading offset 2 of variable y
 // Storing variable y (right) value
 STORE
 }
