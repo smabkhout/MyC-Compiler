@@ -105,7 +105,7 @@ void aff_func(char* symbol, int exp_type) {
   if (exp_type == FLOAT && att->type == INT) {
     printf("ERREUR : Conversion implicite int->float interdite!!\n");
   }
-  printf("// Loading global var %s adress (used at depth %d)\n", symbol, att->depth); //to be changed if the var is global or local
+  printf("// Loading global var %s adress (used at depth %d)\n", symbol, att->depth+1); //to be changed if the var is global or local
   if (att->type == INT) {
     printf("LOADI(%d) // loading offset %d of variable %s\n", att->offset, att->offset, symbol);
   } else if (att->type == FLOAT) {
@@ -215,7 +215,7 @@ var_decl : type vlist          { $2=$1; }
 vlist: vlist vir ID            {
   add_symbol($3, $<int_value>0, depth);
   $$ = $1;
-  printf("// Declare %s of type %s with offset 0 at depth %d\n", $3, type2string($<int_value>0), depth);
+  printf("// Declare %s of type %s with offset %d at depth %d\n", $3, type2string($<int_value>0), global_offset-1, depth);
   if ($<int_value>0 == INT) {
     printf("LOADI(0)\n\n");
   } else if ($<int_value>0 == FLOAT) {
@@ -226,7 +226,7 @@ vlist: vlist vir ID            {
 } // récursion gauche pour traiter les variables déclararées de gauche à droite
 | ID                           {
   add_symbol($1, $<int_value>0, depth);
-  printf("// Declare %s of type %s with offset 0 at depth %d\n", $1, type2string($<int_value>0), depth);
+  printf("// Declare %s of type %s with offset %d at depth %d\n", $1, type2string($<int_value>0), global_offset-1, depth);
   if ($<int_value>0 == INT) {
     printf("LOADI(0)\n\n");
   } else if ($<int_value>0 == FLOAT) {

@@ -3,4 +3,5 @@ float y,w;
 void main(){
 x=3;
 y=2.5;
+w=5+7;
 }
