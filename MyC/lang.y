@@ -15,7 +15,8 @@ void yyerror (char* s) {
   }
 		
 int depth=0; // block depth
-int global_offset=0; //global for now
+int global_offset=0; // global for now
+int condition_number=0; // pour chaque instruction if
  
 
 %}
@@ -302,7 +303,7 @@ elsop : else inst              {}
 |                  %prec IFX   {} // juste un "truc" pour éviter le message de conflit shift / reduce
 ;
 
-bool_cond : PO exp PF         {}
+bool_cond : PO exp PF         {} //  $$=condition_number++; printf("// Debut conditionnelle %d\n", $$);  //to be added in the right place ???
 ;
 
 if : IF                       {}

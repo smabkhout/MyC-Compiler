@@ -1,8 +1,6 @@
-int x;
-float y;
-float z;
+int x, y;
 void main(){
 x=3;
 y=5;
-z=x+y+6;
+if (x<y) x=y;
 }
