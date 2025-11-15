@@ -103,7 +103,10 @@ void add_symbol(char* symbol_name, int type, int depth){
 void aff_func(char* symbol, int exp_type) {
   attribute att = get_symbol_value(symbol);  
   if (exp_type == FLOAT && att->type == INT) {
-    printf("ERREUR : Conversion implicite int->float interdite!!\n");
+    yyerror("ERREUR : Conversion implicite int->float interdite!!");
+  }
+  if (exp_type == INT && att->type == FLOAT) {
+    printf("I2F2\n");
   }
   printf("// Loading global var %s adress (used at depth %d)\n", symbol, att->depth+1); //to be changed if the var is global or local
   if (att->type == INT) {
@@ -111,10 +114,7 @@ void aff_func(char* symbol, int exp_type) {
   } else if (att->type == FLOAT) {
     printf("LOADF(%d) // loading offset %d of variable %s\n", att->offset, att->offset, symbol);
   } else {
-    printf("erreur de type lors de l'affectation.\n");
-  }
-  if (exp_type == INT && att->type == FLOAT) {
-    printf("I2F2\n");
+    yyerror("Erreur de type lors de l'affectation.");
   }
   printf("// Storing variable %s (right) value\n", symbol);
   printf("STORE\n");
@@ -221,7 +221,7 @@ vlist: vlist vir ID            {
   } else if ($<int_value>0 == FLOAT) {
     printf("LOADF(0.0)\n\n");
   } else {
-    printf("erreur de type");
+    yyerror("Erreur de type");
   }
 } // récursion gauche pour traiter les variables déclararées de gauche à droite
 | ID                           {
@@ -232,7 +232,7 @@ vlist: vlist vir ID            {
   } else if ($<int_value>0 == FLOAT) {
     printf("LOADF(0.0)\n\n");
   } else {
-    printf("erreur de type");
+    yyerror("Erreur de type");
   }
   }
 ;
@@ -333,7 +333,7 @@ exp
                                 }   else if ($2 == FLOAT) {
                                     printf("MINUSF\n");
                                 }   else {
-                                    printf("erreur de type");
+                                    yyerror("Erreur de type");
                                 }
                               }
          // -x + y lue comme (- x) + y  et pas - (x + y)
@@ -342,7 +342,23 @@ exp
 | exp STAR exp                { $$=op_code($1, 2, $3); }
 | exp DIV exp                 { $$=op_code($1, 3, $3); }
 | PO exp PF                   { $$=$2; }
-| ID                          {}
+| ID                          {
+  attribute att = get_symbol_value($1);
+  if (att == NULL) {
+    yyerror("Variable non déclarée !!!");
+  }
+  $$=att->type;
+  printf("// Loading global var %s adress (used at depth %d)\n", $1, att->depth+1);
+  if (att->type == INT) {
+    printf("LOADI(%d) // loading offset %d of variable %s\n", att->offset, att->offset, $1);
+  } else if (att->type == FLOAT) {
+    printf("LOADF(%d) // loading offset %d of variable %s\n", att->offset, att->offset, $1);
+  } else {
+    yyerror("Erreur de type.");
+  }
+  printf("// Loading variable %s (right) value\n", $1);
+  printf("LOAD\n");
+}
 | app                         {}
 | NUM                         { $$=INT; printf("LOADI(%i)\n", $1); } // $$=0 pour les entiers
 | DEC                         { $$=FLOAT; printf("LOADF(%f)\n", $1); } // $$=1 pour les flottants

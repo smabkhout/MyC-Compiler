@@ -1,7 +1,8 @@
-int x,z;
-float y,w;
+int x;
+float y;
+float z;
 void main(){
 x=3;
-y=2.5;
-w=5+7;
+y=5;
+z=x+y+6;
 }
