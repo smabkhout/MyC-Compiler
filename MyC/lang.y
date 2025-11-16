@@ -102,7 +102,7 @@ void add_symbol(char* symbol_name, int type, int depth){
 };
 
 // fonction pour deplacer le code d'affection
-void aff_func(char* symbol, int exp_type) {
+void aff_func(char* symbol, int exp_type, int current_depth) {
   attribute att = get_symbol_value(symbol);  
   if (exp_type == FLOAT && att->type == INT) {
     yyerror("ERREUR : Conversion implicite int->float interdite!!");
@@ -110,7 +110,7 @@ void aff_func(char* symbol, int exp_type) {
   if (exp_type == INT && att->type == FLOAT) {
     printf("I2F2\n");
   }
-  printf("// Loading global var %s adress (used at depth %d)\n", symbol, att->depth+1); //to be changed if the var is global or local
+  printf("// Loading global var %s adress (used at depth %d)\n", symbol, current_depth); //to be changed if the var is global or local
   if (att->type == INT) {
     printf("LOADI(%d) // loading offset %d of variable %s\n", att->offset, att->offset, symbol);
   } else if (att->type == FLOAT) {
@@ -139,7 +139,7 @@ void end_glob_var_decl(){
 %start prog  
 
 // liste de tous les type des attributs des non terminaux que vous voulez manipuler l'attribut (il faudra en ajouter plein ;-) )
-%type <type_value> type exp  typename vlist block inst_list decl_list if bool_cond ao af
+%type <type_value> type exp  typename vlist block if bool_cond ao af inst fao faf fun_body
 %type <string_value> fun_head
 
 %%
@@ -172,6 +172,7 @@ fun_head : ID po PF            {
   // Pas de déclaration de fonction à l'intérieur de fonctions !
   if (depth>0) yyerror("Function must be declared at top level~!\n");
   printf("void pcode_%s() ", $1);
+  ++depth; //so that a declaration in the main function would be of depth 1
   }
 
 | ID po params PF              {
@@ -191,9 +192,19 @@ vir : VIR                      {}
 fun_body : fao block faf       {}
 ;
 
-fao : AO                       { printf("{\n"); }
+fao : AO                       {
+  $<int_value>0=$$;
+  printf("{\n");
+  $$=depth++;
+  printf("// Entering function block of depth %d\n", $$);
+}
 ;
-faf : AF                       { printf("}\n"); }
+faf : AF                       {
+  $$=$<int_value>-1;
+  printf("// Getting out of function block of depth %d\n", $$);
+  printf("}\n");
+  depth--;
+}
 ;
 
 
@@ -215,9 +226,9 @@ var_decl : type vlist          {}
 ;
 
 vlist: vlist vir ID            {
-  add_symbol($3, $<int_value>0, depth);
+  add_symbol($3, $<int_value>0, $<int_value>-2);
   $$ = $1;
-  printf("// Declare %s of type %s with offset %d at depth %d\n", $3, type2string($<int_value>0), global_offset-1, $<int_value>-2); //-8 fait reference à af qui stocke le depth courant
+  printf("// Declare %s of type %s with offset %d at depth %d\n", $3, type2string($<int_value>0), global_offset-1, $<int_value>-2); //-2 fait reference à af qui stocke le depth courant
   if ($<int_value>0 == INT) {
     printf("LOADI(0)\n\n");
   } else if ($<int_value>0 == FLOAT) {
@@ -227,8 +238,8 @@ vlist: vlist vir ID            {
   }
 } // récursion gauche pour traiter les variables déclararées de gauche à droite
 | ID                           {
-  add_symbol($1, $<int_value>0, depth);
-  printf("// Declare %s of type %s with offset %d at depth %d\n", $1, type2string($<int_value>0), global_offset-1, $<int_value>-2);
+  add_symbol($1, $<int_value>0, $<int_value>-2);
+  printf("// Declare %s of type %s with offset %d at depth %d\n", $1, type2string($<int_value>0), global_offset-1, $<int_value>-2); //-2 fait reference à af qui stocke le depth courant
   if ($<int_value>0 == INT) {
     printf("LOADI(0)\n\n");
   } else if ($<int_value>0 == FLOAT) {
@@ -270,17 +281,17 @@ ao block af                   {}
 
 // Accolades explicites pour gerer l'entrée et la sortie d'un sous-bloc
 
-ao : AO                       { $$=depth++; printf("// Entering instructions block of depth %d\n", $$); }
+ao : AO                       { $$=depth++; $<int_value>0=$$; printf("// Entering instructions block of depth %d\n", $$); }
 ;
 
-af : AF                       { $$=$<int_value>-1; printf("// Getting out of instructions block of depth %d\n", $$); }
+af : AF                       { $$=$<int_value>-1; printf("// Getting out of instructions block of depth %d\n", $$); depth--; }
 ;
 
 
 // IV.1 Affectations
 
 aff : ID EQ exp               {
-  aff_func($1, $3);
+  aff_func($1, $3, $<int_value>-2);
 }
 ;
 
