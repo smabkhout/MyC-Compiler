@@ -1,21 +1,9 @@
 int x,y,z;
 void main(){
-int d;
-int a,b;
-
-{{{{{{
-    int var1, var2;
-    var1=5;
-    ;
-}}}}}}
-
-
 x=3;
 y=5;
 if (x)
 {
-int c;
-
   if (y) z = 1;
   else z=2;
   }
