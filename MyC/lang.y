@@ -139,7 +139,7 @@ void end_glob_var_decl(){
 %start prog  
 
 // liste de tous les type des attributs des non terminaux que vous voulez manipuler l'attribut (il faudra en ajouter plein ;-) )
-%type <type_value> type exp  typename vlist block inst_list decl_list if bool_cond
+%type <type_value> type exp  typename vlist block inst_list decl_list if bool_cond ao af
 %type <string_value> fun_head
 
 %%
@@ -211,13 +211,13 @@ decl_list : decl_list decl PV   {}
 decl: var_decl                  {}
 ;
 
-var_decl : type vlist          { $2=$1; }
+var_decl : type vlist          {}
 ;
 
 vlist: vlist vir ID            {
   add_symbol($3, $<int_value>0, depth);
   $$ = $1;
-  printf("// Declare %s of type %s with offset %d at depth %d\n", $3, type2string($<int_value>0), global_offset-1, depth);
+  printf("// Declare %s of type %s with offset %d at depth %d\n", $3, type2string($<int_value>0), global_offset-1, $<int_value>-2); //-8 fait reference à af qui stocke le depth courant
   if ($<int_value>0 == INT) {
     printf("LOADI(0)\n\n");
   } else if ($<int_value>0 == FLOAT) {
@@ -228,7 +228,7 @@ vlist: vlist vir ID            {
 } // récursion gauche pour traiter les variables déclararées de gauche à droite
 | ID                           {
   add_symbol($1, $<int_value>0, depth);
-  printf("// Declare %s of type %s with offset %d at depth %d\n", $1, type2string($<int_value>0), global_offset-1, depth);
+  printf("// Declare %s of type %s with offset %d at depth %d\n", $1, type2string($<int_value>0), global_offset-1, $<int_value>-2);
   if ($<int_value>0 == INT) {
     printf("LOADI(0)\n\n");
   } else if ($<int_value>0 == FLOAT) {
@@ -270,10 +270,10 @@ ao block af                   {}
 
 // Accolades explicites pour gerer l'entrée et la sortie d'un sous-bloc
 
-ao : AO                       {}
+ao : AO                       { $$=depth++; printf("// Entering instructions block of depth %d\n", $$); }
 ;
 
-af : AF                       {}
+af : AF                       { $$=$<int_value>-1; printf("// Getting out of instructions block of depth %d\n", $$); }
 ;
 
 
@@ -369,12 +369,12 @@ exp
 // V.2. Booléens
 
 | NOT exp %prec UNA           {}
-| exp INF exp                 { $$=op_code($1, 4, $3); } //à adapter selon le type avec les conversions necessaires
+| exp INF exp                 { $$=op_code($1, 4, $3); }
 | exp SUP exp                 { $$=op_code($1, 5, $3); }
-| exp EQUAL exp               { $$=op_code($1, 6, $3); }
+| exp EQUAL exp               { $$=op_code($1, 6, $3); } //improvisées à cause du manque des exemples
 | exp DIFF exp                { $$=op_code($1, 7, $3); }
-| exp AND exp                 { $$=op_code($1, 8, $3); }
-| exp OR exp                  { $$=op_code($1, 9, $3); }
+| exp AND exp                 { $$=op_code($1, 8, $3); } //à modifier pour implémenter la gestion des Booléens paresseuse
+| exp OR exp                  { $$=op_code($1, 9, $3); } //aussi
 
 ;
 
