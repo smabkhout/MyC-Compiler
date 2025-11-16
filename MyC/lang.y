@@ -73,8 +73,8 @@ char * type2string (int c) {
 };
 
 int op_code(int type1, int operation, int type2) {
-  const char* op_int[] = {"ADDI", "SUBI", "MULTI", "DIVI"};
-    const char* op_float[] = {"ADDF", "SUBF", "MULTF", "DIVF"};
+  const char* op_int[] = {"ADDI", "SUBI", "MULTI", "DIVI", "LTI", "GTI", "EQI", "DIFI", "ANDI", "ORI"}; //improvisées apres GTI (à demander)
+    const char* op_float[] = {"ADDF", "SUBF", "MULTF", "DIVF", "LTF", "GTF", "EQF", "DIFF", "ANDF", "ORF"}; //aussi
     
     if (type1 == INT && type2 == INT) {
         printf("%s\n", op_int[operation]);
@@ -92,6 +92,7 @@ int op_code(int type1, int operation, int type2) {
         return FLOAT;
     }
 };
+
 
 // ajoute le symbole "symbole_name" de type "type" et depth "depth" dans notre table de symboles
 void add_symbol(char* symbol_name, int type, int depth){
@@ -138,7 +139,7 @@ void end_glob_var_decl(){
 %start prog  
 
 // liste de tous les type des attributs des non terminaux que vous voulez manipuler l'attribut (il faudra en ajouter plein ;-) )
-%type <type_value> type exp  typename vlist block inst_list decl_list
+%type <type_value> type exp  typename vlist block inst_list decl_list if bool_cond
 %type <string_value> fun_head
 
 %%
@@ -296,20 +297,20 @@ ret : RETURN exp              {}
 //           avec ELSE en entrée (voir y.output)
 
 cond :
-if bool_cond inst  elsop       {}
+if bool_cond inst  elsop       { printf("// Fin conditionelle %d\n", $1); $2=$1; }
 ;
 
-elsop : else inst              {}
-|                  %prec IFX   {} // juste un "truc" pour éviter le message de conflit shift / reduce
+elsop : else inst              { printf("End_%d:\n", $<int_value>-2); }
+|                  %prec IFX   { printf("False_%d:\n// la condition %d est fausse\n", $<int_value>-2, $<int_value>-2); } // juste un "truc" pour éviter le message de conflit shift / reduce
 ;
 
-bool_cond : PO exp PF         {} //  $$=condition_number++; printf("// Debut conditionnelle %d\n", $$);  //to be added in the right place ???
+bool_cond : PO exp PF         { printf("IFN(False_%d)\n// la condition %d est vraie\n", $<int_value>0, $<int_value>0); }
 ;
 
-if : IF                       {}
+if : IF                       { $$=condition_number++; printf("// Debut conditionelle %d\n", $$); }
 ;
 
-else : ELSE                   {}
+else : ELSE                   { printf("GOTO(End_%d)\nFalse_%d:\n// la condition %d est fausse\n", $<int_value>-2, $<int_value>-2, $<int_value>-2); }
 ;
 
 // IV.4. Iterations
@@ -361,19 +362,19 @@ exp
   printf("LOAD\n");
 }
 | app                         {}
-| NUM                         { $$=INT; printf("LOADI(%i)\n", $1); } // $$=0 pour les entiers
-| DEC                         { $$=FLOAT; printf("LOADF(%f)\n", $1); } // $$=1 pour les flottants
+| NUM                         { $$=INT; printf("LOADI(%i)\n", $1); }
+| DEC                         { $$=FLOAT; printf("LOADF(%f)\n", $1); }
 
 
 // V.2. Booléens
 
 | NOT exp %prec UNA           {}
-| exp INF exp                 {}
-| exp SUP exp                 {}
-| exp EQUAL exp               {}
-| exp DIFF exp                {}
-| exp AND exp                 {}
-| exp OR exp                  {}
+| exp INF exp                 { $$=op_code($1, 4, $3); } //à adapter selon le type avec les conversions necessaires
+| exp SUP exp                 { $$=op_code($1, 5, $3); }
+| exp EQUAL exp               { $$=op_code($1, 6, $3); }
+| exp DIFF exp                { $$=op_code($1, 7, $3); }
+| exp AND exp                 { $$=op_code($1, 8, $3); }
+| exp OR exp                  { $$=op_code($1, 9, $3); }
 
 ;
 

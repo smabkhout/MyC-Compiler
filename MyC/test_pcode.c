@@ -15,8 +15,8 @@ void init_glob_var(){
 // Declare x of type int with offset 0 at depth 0
 LOADI(0)
 
-// Declare y of type int with offset 1 at depth 0
-LOADI(0)
+// Declare y of type float with offset 1 at depth 0
+LOADF(0.0)
 
 }
 
@@ -27,25 +27,38 @@ LOADI(0) // loading offset 0 of variable x
 // Storing variable x (right) value
 STORE
 LOADI(5)
+I2F2
 // Loading global var y adress (used at depth 1)
-LOADI(1) // loading offset 1 of variable y
+LOADF(1) // loading offset 1 of variable y
 // Storing variable y (right) value
 STORE
+// Debut conditionelle 0
 // Loading global var x adress (used at depth 1)
 LOADI(0) // loading offset 0 of variable x
 // Loading variable x (right) value
 LOAD
 // Loading global var y adress (used at depth 1)
-LOADI(1) // loading offset 1 of variable y
+LOADF(1) // loading offset 1 of variable y
 // Loading variable y (right) value
 LOAD
-// Debut conditionnelle 0
-// Loading global var y adress (used at depth 1)
-LOADI(1) // loading offset 1 of variable y
-// Loading variable y (right) value
-LOAD
+I2F1 // converting first arg to float
+DIFF
+IFN(False_0)
+// la condition 0 est vraie
 // Loading global var x adress (used at depth 1)
 LOADI(0) // loading offset 0 of variable x
-// Storing variable x (right) value
+// Loading variable x (right) value
+LOAD
+I2F2
+// Loading global var y adress (used at depth 1)
+LOADF(1) // loading offset 1 of variable y
+// Storing variable y (right) value
 STORE
+False_0:
+// la condition 0 est fausse
+// Fin conditionelle 0
+// Loading global var x adress (used at depth 1)
+LOADI(0) // loading offset 0 of variable x
+// Loading variable x (right) value
+LOAD
 }
