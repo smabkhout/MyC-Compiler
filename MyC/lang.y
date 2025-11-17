@@ -17,6 +17,7 @@ void yyerror (char* s) {
 int depth=0; // block depth
 int global_offset=0; // global for now
 int condition_number=0; // pour chaque instruction if
+int while_number=0; // pour chaque instruction while
  
 
 %}
@@ -201,7 +202,7 @@ fao : AO                       {
 ;
 faf : AF                       {
   $$=$<int_value>-1;
-  printf("// Getting out of function block of depth %d\n", $$);
+  printf("// Exiting function block of depth %d\n", $$);
   printf("}\n");
   depth--;
 }
@@ -326,12 +327,12 @@ else : ELSE                   { printf("GOTO(End_%d)\nFalse_%d:\n// la condition
 
 // IV.4. Iterations
 
-loop : while while_cond inst  {}
+loop : while while_cond inst  { printf("// Fin boucle while %d\n", $1); $2=$1; }
 ;
 
-while_cond : PO exp PF        {}
+while_cond : PO exp PF        { printf("IFN(EndLoop_%d)\n// Debut boucle while %d", $<int_value>0, $<int_value>0);}
 
-while : WHILE                 {}
+while : WHILE                 { $$=while_number++; printf("StartLoop_%d: // chargement condition boucle while %d\n", $$, $$); }
 ;
 
 
