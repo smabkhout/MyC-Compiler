@@ -53,31 +53,23 @@ LTI
 IFN(EndLoop_0)
 // Debut boucle while 0
 SAVEBP // Entering instructions block of depth 2
-// Declare var1 of type int with offset 3 at depth 2
-LOADI(0)
-
-LOADI(5)
-// Loading global var var1 adress (used at depth 2)
-LOADI(3) // loading offset 3 of variable var1
-// Storing variable var1 (right) value
-STORE
 // Debut conditionelle 0
-// Loading global var z adress (used at depth 1)
+// Loading global var z adress (used at depth 2)
 LOADI(2) // loading offset 2 of variable z
 // Loading variable z (right) value
 LOAD
-// Loading global var x adress (used at depth 1)
+// Loading global var x adress (used at depth 2)
 LOADI(0) // loading offset 0 of variable x
 // Loading variable x (right) value
 LOAD
 GTI
 IFN(False_0)
 // la condition 0 est vraie
-// Loading global var z adress (used at depth 1)
+// Loading global var z adress (used at depth 2)
 LOADI(2) // loading offset 2 of variable z
 // Loading variable z (right) value
 LOAD
-// Loading global var y adress (used at depth 1)
+// Loading global var y adress (used at depth 2)
 LOADI(1) // loading offset 1 of variable y
 // Loading variable y (right) value
 LOAD
@@ -89,11 +81,11 @@ STORE
 GOTO(End_0)
 False_0:
 // la condition 0 est fausse
-// Loading global var z adress (used at depth 1)
+// Loading global var z adress (used at depth 2)
 LOADI(2) // loading offset 2 of variable z
 // Loading variable z (right) value
 LOAD
-// Loading global var y adress (used at depth 1)
+// Loading global var y adress (used at depth 2)
 LOADI(1) // loading offset 1 of variable y
 // Loading variable y (right) value
 LOAD
@@ -104,7 +96,7 @@ LOADI(2) // loading offset 2 of variable z
 STORE
 End_0:
 // Fin conditionelle 0
-// Loading global var z adress (used at depth 1)
+// Loading global var z adress (used at depth 2)
 LOADI(2) // loading offset 2 of variable z
 // Loading variable z (right) value
 LOAD

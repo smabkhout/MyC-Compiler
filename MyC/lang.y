@@ -14,7 +14,7 @@ void yyerror (char* s) {
   exit(0);
   }
 		
-int depth=0; // block depth
+static int depth=0; // block depth
 int global_offset=0; // global for now
 int condition_number=0; // pour chaque instruction if
 int while_number=0; // pour chaque instruction while
@@ -103,7 +103,7 @@ void add_symbol(char* symbol_name, int type, int depth){
 };
 
 // fonction pour deplacer le code d'affection
-void aff_func(char* symbol, int exp_type, int current_depth) {
+void aff_func(char* symbol, int exp_type) {
   attribute att = get_symbol_value(symbol);  
   if (exp_type == FLOAT && att->type == INT) {
     yyerror("ERREUR : Conversion implicite int->float interdite!!");
@@ -111,7 +111,7 @@ void aff_func(char* symbol, int exp_type, int current_depth) {
   if (exp_type == INT && att->type == FLOAT) {
     printf("I2F2\n");
   }
-  printf("// Loading global var %s adress (used at depth %d)\n", symbol, current_depth); //to be changed if the var is global or local
+  printf("// Loading global var %s adress (used at depth %d)\n", symbol, depth); //to be changed if the var is global or local
   if (att->type == INT) {
     printf("LOADI(%d) // loading offset %d of variable %s\n", att->offset, att->offset, symbol);
   } else if (att->type == FLOAT) {
@@ -173,7 +173,6 @@ fun_head : ID po PF            {
   // Pas de déclaration de fonction à l'intérieur de fonctions !
   if (depth>0) yyerror("Function must be declared at top level~!\n");
   printf("void pcode_%s() ", $1);
-  ++depth; //so that a declaration in the main function would be of depth 1
   }
 
 | ID po params PF              {
@@ -194,17 +193,13 @@ fun_body : fao block faf       {}
 ;
 
 fao : AO                       {
-  $$=depth++;
-  $<int_value>0=$$;
   printf("{\n");
-  printf("// Entering function block of depth %d\n", $$);
+  printf("// Entering function block of depth %d\n", ++depth);; //so that a declaration in the main function would be of depth 1
 }
 ;
 faf : AF                       {
-  $$=$<int_value>-1;
-  printf("// Exiting function block of depth %d\n", $$);
+  printf("// Exiting function block of depth %d\n", depth--);
   printf("}\n");
-  depth--;
 }
 ;
 
@@ -229,7 +224,7 @@ var_decl : type vlist          {}
 vlist: vlist vir ID            {
   add_symbol($3, $<int_value>0, $<int_value>-2);
   $$ = $1;
-  printf("// Declare %s of type %s with offset %d at depth %d\n", $3, type2string($<int_value>0), global_offset-1, $<int_value>-2); //-2 fait reference à af qui stocke le depth courant
+  printf("// Declare %s of type %s with offset %d at depth %d\n", $3, type2string($<int_value>0), global_offset-1, depth); //-2 fait reference à af qui stocke le depth courant
   if ($<int_value>0 == INT) {
     printf("LOADI(0)\n\n");
   } else if ($<int_value>0 == FLOAT) {
@@ -240,7 +235,7 @@ vlist: vlist vir ID            {
 } // récursion gauche pour traiter les variables déclararées de gauche à droite
 | ID                           {
   add_symbol($1, $<int_value>0, $<int_value>-2);
-  printf("// Declare %s of type %s with offset %d at depth %d\n", $1, type2string($<int_value>0), global_offset-1, $<int_value>-2); //-2 fait reference à af qui stocke le depth courant
+  printf("// Declare %s of type %s with offset %d at depth %d\n", $1, type2string($<int_value>0), global_offset-1, depth); //-2 fait reference à af qui stocke le depth courant
   if ($<int_value>0 == INT) {
     printf("LOADI(0)\n\n");
   } else if ($<int_value>0 == FLOAT) {
@@ -282,17 +277,17 @@ ao block af                   {}
 
 // Accolades explicites pour gerer l'entrée et la sortie d'un sous-bloc
 
-ao : AO                       { $$=depth++; $<int_value>0=$$; printf("SAVEBP // Entering instructions block of depth %d\n", $$); }
+ao : AO                       { depth++; $<int_value>0=$$; printf("SAVEBP // Entering instructions block of depth %d\n", depth); }
 ;
 
-af : AF                       { $$=$<int_value>-1; printf("RESTOREBP // Exiting instructions block of depth %d\n", $$); depth--; }
+af : AF                       { $$=$<int_value>-1; printf("RESTOREBP // Exiting instructions block of depth %d\n", depth--); }
 ;
 
 
 // IV.1 Affectations
 
 aff : ID EQ exp               {
-  aff_func($1, $3, $<int_value>-2);
+  aff_func($1, $3); // $<int_value>-2
 }
 ;
 
@@ -316,7 +311,7 @@ elsop : else inst              { printf("End_%d:\n", $<int_value>-2); }
 |                  %prec IFX   { printf("False_%d:\n// la condition %d est fausse\n", $<int_value>-2, $<int_value>-2); } // juste un "truc" pour éviter le message de conflit shift / reduce
 ;
 
-bool_cond : PO exp PF         { $<int_value>-1=$<int_value>-3; $$=$<int_value>-3; printf("IFN(False_%d)\n// la condition %d est vraie\n", $<int_value>0, $<int_value>0); } // on stocke la valeur du depth dans cond pour pouvoir y acceder apres dans inst (inst de if n'est pas comme inst de block/fun)
+bool_cond : PO exp PF         { printf("IFN(False_%d)\n// la condition %d est vraie\n", $<int_value>0, $<int_value>0); } // on stocke la valeur du depth dans cond pour pouvoir y acceder apres dans inst (inst de if n'est pas comme inst de block/fun)
 ;
 
 if : IF                       { $$=condition_number++; printf("// Debut conditionelle %d\n", $$); }
@@ -330,7 +325,7 @@ else : ELSE                   { printf("GOTO(End_%d)\nFalse_%d:\n// la condition
 loop : while while_cond inst  { printf("GOTO(StartLoop_%d)\n// Fin boucle while %d\nEndLoop_%d:\n", $1, $1, $1); }
 ;
 
-while_cond : PO exp PF        { $<int_value>-1=$<int_value>-3; printf("IFN(EndLoop_%d)\n// Debut boucle while %d\n", $<int_value>0, $<int_value>0);} // on stocke la valeur du depth dans loop pour pouvoir y acceder apres dans inst (inst de if n'est pas comme inst de block/fun)
+while_cond : PO exp PF        { printf("IFN(EndLoop_%d)\n// Debut boucle while %d\n", $<int_value>0, $<int_value>0);} // on stocke la valeur du depth dans loop pour pouvoir y acceder apres dans inst (inst de if n'est pas comme inst de block/fun)
 
 while : WHILE                 { $$=while_number++; printf("StartLoop_%d: // chargement condition boucle while %d\n", $$, $$); }
 ;
@@ -362,7 +357,7 @@ exp
     yyerror("Variable non déclarée !!!");
   }
   $$=att->type;
-  printf("// Loading global var %s adress (used at depth %d)\n", $1, att->depth+1);
+  printf("// Loading global var %s adress (used at depth %d)\n", $1, depth);
   if (att->type == INT) {
     printf("LOADI(%d) // loading offset %d of variable %s\n", att->offset, att->offset, $1);
   } else if (att->type == FLOAT) {
