@@ -15,7 +15,7 @@ void yyerror (char* s) {
   }
 		
 int depth=0; // block depth
-int global_offset=0; // global for now
+int global_offset=0; //  offset des variables declarées
 int condition_number=0; // pour chaque instruction if/while
  
 
@@ -99,6 +99,10 @@ void add_symbol(char* symbol_name, int type, int depth){
   attribute att = makeSymbol(type, global_offset, depth);
   set_symbol_value(symbol_name, att);
   global_offset++;
+};
+
+void remove_symbol(char* symbol_name, int depth){
+  // to be done in order to remove symbols at the end of their scope (to be called at the af/faf instruction)
 };
 
 // fonction pour deplacer le code d'affection

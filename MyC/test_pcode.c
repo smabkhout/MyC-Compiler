@@ -23,23 +23,35 @@ void pcode_main() {
 LOADI(0)
 
 LOADI(3)
-// Loading local var y adress declared at depth 1 (used at depth 1)
-LOADBP
-SHIFT(1) // applying offset 1 of variable y
-// Storing variable y (right) value
-STORE
-// Loading local var y adress declared at depth 1 (used at depth 1)
-LOADBP
-SHIFT(1) // applying offset 1 of variable y
-// Loading variable y (right) value
-LOAD
 // Loading global var x adress (used at depth 1)
 LOADI(0) // loading offset 0 of variable x
 // Storing variable x (right) value
 STORE
-// Loading global var x adress (used at depth 1)
-LOADI(0) // loading offset 0 of variable x
+SAVEBP // Entering instructions block of depth 2
+// Declare x of type int with offset 2 at depth 2
+LOADI(0)
+
+LOADI(4)
+// Loading local var x adress declared at depth 2 (used at depth 2)
+LOADBP
+SHIFT(2) // applying offset 2 of variable x
+// Storing variable x (right) value
+STORE
+// Loading local var x adress declared at depth 2 (used at depth 2)
+LOADBP
+SHIFT(2) // applying offset 2 of variable x
 // Loading variable x (right) value
+LOAD
+// Loading local var y adress declared at depth 2 (used at depth 1)
+LOADBP
+SHIFT(1) // applying offset 1 of variable y
+// Storing variable y (right) value
+STORE
+RESTOREBP // Exiting instructions block of depth 2
+// Loading local var y adress declared at depth 1 (used at depth 1)
+LOADBP
+SHIFT(1) // applying offset 1 of variable y
+// Loading variable y (right) value
 LOAD
 // Exiting function block of depth 1
 }
