@@ -25,38 +25,16 @@ LOADI(0)
 
 void pcode_main() {
 // Entering function block of depth 1
-// Declare d of type int with offset 3 at depth 1
-LOADI(0)
-
-// Declare a of type int with offset 4 at depth 1
-LOADI(0)
-
-// Declare b of type int with offset 5 at depth 1
-LOADI(0)
-
-// Entering instructions block of depth 2
-// Entering instructions block of depth 3
-// Entering instructions block of depth 4
-// Entering instructions block of depth 5
-// Entering instructions block of depth 6
-// Entering instructions block of depth 7
-// Declare var1 of type int with offset 6 at depth 7
-LOADI(0)
-
-// Declare var2 of type int with offset 7 at depth 7
-LOADI(0)
-
-LOADI(5)
-// Loading global var var1 adress (used at depth 7)
-LOADI(6) // loading offset 6 of variable var1
-// Storing variable var1 (right) value
+LOADI(4)
+// Loading global var x adress (used at depth 1935152224)
+LOADI(0) // loading offset 0 of variable x
+// Storing variable x (right) value
 STORE
-// Getting out of instructions block of depth 7
-// Getting out of instructions block of depth 6
-// Getting out of instructions block of depth 5
-// Getting out of instructions block of depth 4
-// Getting out of instructions block of depth 3
-// Getting out of instructions block of depth 2
+LOADI(5)
+// Loading global var x adress (used at depth 1)
+LOADI(0) // loading offset 0 of variable x
+// Storing variable x (right) value
+STORE
 LOADI(3)
 // Loading global var x adress (used at depth 1)
 LOADI(0) // loading offset 0 of variable x
@@ -74,10 +52,7 @@ LOADI(0) // loading offset 0 of variable x
 LOAD
 IFN(False_0)
 // la condition 0 est vraie
-// Entering instructions block of depth 2
-// Declare c of type int with offset 8 at depth 2
-LOADI(0)
-
+SAVEBP // Entering instructions block of depth 2
 // Debut conditionelle 1
 // Loading global var y adress (used at depth 1)
 LOADI(1) // loading offset 1 of variable y
@@ -86,7 +61,7 @@ LOAD
 IFN(False_1)
 // la condition 1 est vraie
 LOADI(1)
-// Loading global var z adress (used at depth 1704826560)
+// Loading global var z adress (used at depth 1935152384)
 LOADI(2) // loading offset 2 of variable z
 // Storing variable z (right) value
 STORE
@@ -94,17 +69,17 @@ GOTO(End_1)
 False_1:
 // la condition 1 est fausse
 LOADI(2)
-// Loading global var z adress (used at depth 1704826592)
+// Loading global var z adress (used at depth 1935152384)
 LOADI(2) // loading offset 2 of variable z
 // Storing variable z (right) value
 STORE
 End_1:
 // Fin conditionelle 1
-// Getting out of instructions block of depth 2
+RESTOREBP // Exiting instructions block of depth 2
 GOTO(End_0)
 False_0:
 // la condition 0 est fausse
-// Entering instructions block of depth 2
+SAVEBP // Entering instructions block of depth 2
 // Debut conditionelle 2
 // Loading global var z adress (used at depth 1)
 LOADI(2) // loading offset 2 of variable z
@@ -127,7 +102,7 @@ LOADI(2) // loading offset 2 of variable z
 STORE
 End_2:
 // Fin conditionelle 2
-// Getting out of instructions block of depth 2
+RESTOREBP // Exiting instructions block of depth 2
 End_0:
 // Fin conditionelle 0
 // Loading global var z adress (used at depth 1)

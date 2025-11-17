@@ -281,10 +281,10 @@ ao block af                   {}
 
 // Accolades explicites pour gerer l'entrée et la sortie d'un sous-bloc
 
-ao : AO                       { $$=depth++; $<int_value>0=$$; printf("// Entering instructions block of depth %d\n", $$); }
+ao : AO                       { $$=depth++; $<int_value>0=$$; printf("SAVEBP // Entering instructions block of depth %d\n", $$); }
 ;
 
-af : AF                       { $$=$<int_value>-1; printf("// Getting out of instructions block of depth %d\n", $$); depth--; }
+af : AF                       { $$=$<int_value>-1; printf("RESTOREBP // Exiting instructions block of depth %d\n", $$); depth--; }
 ;
 
 
