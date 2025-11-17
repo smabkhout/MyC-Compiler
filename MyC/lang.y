@@ -14,10 +14,9 @@ void yyerror (char* s) {
   exit(0);
   }
 		
-static int depth=0; // block depth
+int depth=0; // block depth
 int global_offset=0; // global for now
-int condition_number=0; // pour chaque instruction if
-int while_number=0; // pour chaque instruction while
+int condition_number=0; // pour chaque instruction if/while
  
 
 %}
@@ -327,7 +326,7 @@ loop : while while_cond inst  { printf("GOTO(StartLoop_%d)\n// Fin boucle while 
 
 while_cond : PO exp PF        { printf("IFN(EndLoop_%d)\n// Debut boucle while %d\n", $<int_value>0, $<int_value>0);} // on stocke la valeur du depth dans loop pour pouvoir y acceder apres dans inst (inst de if n'est pas comme inst de block/fun)
 
-while : WHILE                 { $$=while_number++; printf("StartLoop_%d: // chargement condition boucle while %d\n", $$, $$); }
+while : WHILE                 { $$=condition_number++; printf("StartLoop_%d: // chargement condition boucle while %d\n", $$, $$); }
 ;
 
 
