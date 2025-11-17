@@ -140,7 +140,7 @@ void end_glob_var_decl(){
 %start prog  
 
 // liste de tous les type des attributs des non terminaux que vous voulez manipuler l'attribut (il faudra en ajouter plein ;-) )
-%type <type_value> type exp  typename vlist block if bool_cond ao af inst fao faf fun_body
+%type <type_value> type exp  typename vlist block if bool_cond ao af inst fao faf fun_body while
 %type <string_value> fun_head
 
 %%
@@ -327,10 +327,10 @@ else : ELSE                   { printf("GOTO(End_%d)\nFalse_%d:\n// la condition
 
 // IV.4. Iterations
 
-loop : while while_cond inst  { printf("// Fin boucle while %d\n", $1); $2=$1; }
+loop : while while_cond inst  { printf("GOTO(StartLoop_%d)\n// Fin boucle while %d\nEndLoop_%d:\n", $1, $1, $1); }
 ;
 
-while_cond : PO exp PF        { printf("IFN(EndLoop_%d)\n// Debut boucle while %d", $<int_value>0, $<int_value>0);}
+while_cond : PO exp PF        { $<int_value>-1=$<int_value>-3; printf("IFN(EndLoop_%d)\n// Debut boucle while %d\n", $<int_value>0, $<int_value>0);} // on stocke la valeur du depth dans loop pour pouvoir y acceder apres dans inst (inst de if n'est pas comme inst de block/fun)
 
 while : WHILE                 { $$=while_number++; printf("StartLoop_%d: // chargement condition boucle while %d\n", $$, $$); }
 ;

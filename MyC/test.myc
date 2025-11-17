@@ -1,17 +1,13 @@
 int x,y,z;
 void main(){
-x=3;
-y=5;
-if (x)
-{
-  if (y) z = 1;
-  else z=2;
-  }
-else
-{
-  if (z) z = 3;
-  else z=4;
-  }
+x=1;
+y=10;
+z=5;
+while (x < y) {
+    int var1;
+    var1=5;
+  if (z > x) z = z+y;
+  else z = z-y;
 z;
 }
-
+}
