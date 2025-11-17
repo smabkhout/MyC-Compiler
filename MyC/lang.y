@@ -103,21 +103,37 @@ void add_symbol(char* symbol_name, int type, int depth){
 
 // fonction pour deplacer le code d'affection
 void aff_func(char* symbol, int exp_type) {
-  attribute att = get_symbol_value(symbol);  
+  attribute att = get_symbol_value(symbol);
+  if (att == NULL) {
+    yyerror("Variable non déclarée !!!");
+  }
   if (exp_type == FLOAT && att->type == INT) {
     yyerror("ERREUR : Conversion implicite int->float interdite!!");
   }
   if (exp_type == INT && att->type == FLOAT) {
     printf("I2F2\n");
   }
-  printf("// Loading global var %s adress (used at depth %d)\n", symbol, depth); //to be changed if the var is global or local
-  if (att->type == INT) {
-    printf("LOADI(%d) // loading offset %d of variable %s\n", att->offset, att->offset, symbol);
-  } else if (att->type == FLOAT) {
-    printf("LOADF(%d) // loading offset %d of variable %s\n", att->offset, att->offset, symbol);
-  } else {
-    yyerror("Erreur de type lors de l'affectation.");
-  }
+
+  if (att->depth == 0) {
+    printf("// Loading global var %s adress (used at depth %d)\n", symbol, depth);
+    if (att->type == INT) {
+      printf("LOADI(%d) // loading offset %d of variable %s\n", att->offset, att->offset, symbol);
+    } else if (att->type == FLOAT) {
+      printf("LOADF(%d) // loading offset %d of variable %s\n", att->offset, att->offset, symbol);
+    } else {
+      yyerror("Erreur de type lors de l'affectation.");
+    }
+  } else if (att->depth > 0 && depth >= att->depth) { // on esssaie d'acceder à une variable dans notre portée
+    printf("// Loading local var %s adress declared at depth %d (used at depth %d)\n", symbol, depth, att->depth);
+    if (att->type == INT || att->type == FLOAT) {
+      printf("LOADBP\nSHIFT(%d) // applying offset %d of variable %s\n", att->offset, att->offset, symbol);
+    } else {
+      yyerror("Erreur de type lors de l'affectation.");
+    }
+  } else if (att->depth > 0 && depth < att->depth) { // la variable est en dehors de notre portée !!
+    yyerror("Attemtping to use variable outside your scope");
+  } else { yyerror("NEGATIVE DEPTH ?!?!"); }
+
   printf("// Storing variable %s (right) value\n", symbol);
   printf("STORE\n");
 };
@@ -139,7 +155,7 @@ void end_glob_var_decl(){
 %start prog  
 
 // liste de tous les type des attributs des non terminaux que vous voulez manipuler l'attribut (il faudra en ajouter plein ;-) )
-%type <type_value> type exp  typename vlist block if bool_cond ao af inst fao faf fun_body while
+%type <type_value> type exp  typename vlist block if while
 %type <string_value> fun_head
 
 %%
@@ -233,7 +249,7 @@ vlist: vlist vir ID            {
   }
 } // récursion gauche pour traiter les variables déclararées de gauche à droite
 | ID                           {
-  add_symbol($1, $<int_value>0, $<int_value>-2);
+  add_symbol($1, $<int_value>0, depth);
   printf("// Declare %s of type %s with offset %d at depth %d\n", $1, type2string($<int_value>0), global_offset-1, depth); //-2 fait reference à af qui stocke le depth courant
   if ($<int_value>0 == INT) {
     printf("LOADI(0)\n\n");
@@ -276,10 +292,10 @@ ao block af                   {}
 
 // Accolades explicites pour gerer l'entrée et la sortie d'un sous-bloc
 
-ao : AO                       { depth++; $<int_value>0=$$; printf("SAVEBP // Entering instructions block of depth %d\n", depth); }
+ao : AO                       {  printf("SAVEBP // Entering instructions block of depth %d\n", ++depth); }
 ;
 
-af : AF                       { $$=$<int_value>-1; printf("RESTOREBP // Exiting instructions block of depth %d\n", depth--); }
+af : AF                       { printf("RESTOREBP // Exiting instructions block of depth %d\n", depth--); }
 ;
 
 
@@ -303,7 +319,7 @@ ret : RETURN exp              {}
 //           avec ELSE en entrée (voir y.output)
 
 cond :
-if bool_cond inst  elsop       { printf("// Fin conditionelle %d\n", $1); $2=$1; }
+if bool_cond inst  elsop       { printf("// Fin conditionelle %d\n", $1); }
 ;
 
 elsop : else inst              { printf("End_%d:\n", $<int_value>-2); }
@@ -356,14 +372,25 @@ exp
     yyerror("Variable non déclarée !!!");
   }
   $$=att->type;
-  printf("// Loading global var %s adress (used at depth %d)\n", $1, depth);
-  if (att->type == INT) {
-    printf("LOADI(%d) // loading offset %d of variable %s\n", att->offset, att->offset, $1);
-  } else if (att->type == FLOAT) {
-    printf("LOADF(%d) // loading offset %d of variable %s\n", att->offset, att->offset, $1);
-  } else {
-    yyerror("Erreur de type.");
-  }
+  if (att->depth == 0) {
+    printf("// Loading global var %s adress (used at depth %d)\n", $1, depth);
+    if (att->type == INT) {
+      printf("LOADI(%d) // loading offset %d of variable %s\n", att->offset, att->offset, $1);
+    } else if (att->type == FLOAT) {
+      printf("LOADF(%d) // loading offset %d of variable %s\n", att->offset, att->offset, $1);
+    } else {
+      yyerror("Erreur de type.");
+    }
+  } else if (att->depth > 0 && depth >= att->depth) { // on esssaie d'acceder à une variable dans notre portée
+    printf("// Loading local var %s adress declared at depth %d (used at depth %d)\n", $1, depth, att->depth);
+    if (att->type == INT || att->type == FLOAT) {
+      printf("LOADBP\nSHIFT(%d) // applying offset %d of variable %s\n", att->offset, att->offset, $1);
+    } else {
+      yyerror("Erreur de type.");
+    }
+  } else if (att->depth > 0 && depth < att->depth) { // la variable est en dehors de notre portée !!
+    yyerror("Attemtping to use variable outside your scope");
+  } else { yyerror("NEGATIVE DEPTH ?!?!"); }
   printf("// Loading variable %s (right) value\n", $1);
   printf("LOAD\n");
 }
