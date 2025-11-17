@@ -193,9 +193,9 @@ fun_body : fao block faf       {}
 ;
 
 fao : AO                       {
+  $$=depth++;
   $<int_value>0=$$;
   printf("{\n");
-  $$=depth++;
   printf("// Entering function block of depth %d\n", $$);
 }
 ;
@@ -281,7 +281,7 @@ ao block af                   {}
 
 // Accolades explicites pour gerer l'entrée et la sortie d'un sous-bloc
 
-ao : AO                       { $$=777; $<int_value>0=$$; printf("SAVEBP // Entering instructions block of depth %d\n", $$); }
+ao : AO                       { $$=depth++; $<int_value>0=$$; printf("SAVEBP // Entering instructions block of depth %d\n", $$); }
 ;
 
 af : AF                       { $$=$<int_value>-1; printf("RESTOREBP // Exiting instructions block of depth %d\n", $$); depth--; }
