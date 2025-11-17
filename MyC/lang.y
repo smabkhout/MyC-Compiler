@@ -315,7 +315,7 @@ elsop : else inst              { printf("End_%d:\n", $<int_value>-2); }
 |                  %prec IFX   { printf("False_%d:\n// la condition %d est fausse\n", $<int_value>-2, $<int_value>-2); } // juste un "truc" pour éviter le message de conflit shift / reduce
 ;
 
-bool_cond : PO exp PF         { printf("IFN(False_%d)\n// la condition %d est vraie\n", $<int_value>0, $<int_value>0); }
+bool_cond : PO exp PF         { $<int_value>-1=$<int_value>-3; $$=$<int_value>-3; printf("IFN(False_%d)\n// la condition %d est vraie\n", $<int_value>0, $<int_value>0); } // on stocke la valeur du depth dans cond pour pouvoir y acceder apres dans inst (inst de if n'est pas comme inst de block/fun)
 ;
 
 if : IF                       { $$=condition_number++; printf("// Debut conditionelle %d\n", $$); }

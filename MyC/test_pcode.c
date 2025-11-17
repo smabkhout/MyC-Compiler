@@ -25,16 +25,6 @@ LOADI(0)
 
 void pcode_main() {
 // Entering function block of depth 1
-LOADI(4)
-// Loading global var x adress (used at depth 1)
-LOADI(0) // loading offset 0 of variable x
-// Storing variable x (right) value
-STORE
-LOADI(5)
-// Loading global var x adress (used at depth 1)
-LOADI(0) // loading offset 0 of variable x
-// Storing variable x (right) value
-STORE
 LOADI(3)
 // Loading global var x adress (used at depth 1)
 LOADI(0) // loading offset 0 of variable x
@@ -45,20 +35,6 @@ LOADI(5)
 LOADI(1) // loading offset 1 of variable y
 // Storing variable y (right) value
 STORE
-SAVEBP // Entering instructions block of depth 2
-SAVEBP // Entering instructions block of depth 3
-SAVEBP // Entering instructions block of depth 4
-// Declare loc of type int with offset 3 at depth 4
-LOADI(0)
-
-LOADI(4)
-// Loading global var loc adress (used at depth 4)
-LOADI(3) // loading offset 3 of variable loc
-// Storing variable loc (right) value
-STORE
-RESTOREBP // Exiting instructions block of depth 4
-RESTOREBP // Exiting instructions block of depth 3
-RESTOREBP // Exiting instructions block of depth 2
 // Debut conditionelle 0
 // Loading global var x adress (used at depth 1)
 LOADI(0) // loading offset 0 of variable x
@@ -75,7 +51,7 @@ LOAD
 IFN(False_1)
 // la condition 1 est vraie
 LOADI(1)
-// Loading global var z adress (used at depth -639912576)
+// Loading global var z adress (used at depth 2)
 LOADI(2) // loading offset 2 of variable z
 // Storing variable z (right) value
 STORE
@@ -83,7 +59,7 @@ GOTO(End_1)
 False_1:
 // la condition 1 est fausse
 LOADI(2)
-// Loading global var z adress (used at depth -639912576)
+// Loading global var z adress (used at depth 2)
 LOADI(2) // loading offset 2 of variable z
 // Storing variable z (right) value
 STORE
@@ -102,7 +78,7 @@ LOAD
 IFN(False_2)
 // la condition 2 est vraie
 LOADI(3)
-// Loading global var z adress (used at depth 1)
+// Loading global var z adress (used at depth 2)
 LOADI(2) // loading offset 2 of variable z
 // Storing variable z (right) value
 STORE
