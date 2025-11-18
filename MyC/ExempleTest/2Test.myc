@@ -1,0 +1,13 @@
+
+int x, y;
+float z, t;
+float pi;
+
+void main(){
+   x = 5;
+   y = 6;
+   x + y;
+   t = 3.5;
+   z = t + x + y;
+   z - pi; 
+}
