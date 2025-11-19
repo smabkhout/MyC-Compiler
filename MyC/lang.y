@@ -15,7 +15,7 @@ void yyerror (char* s) {
   }
 		
 int depth=0; // block depth
-int global_offset=0; //  offset des variables declarées
+int current_offset=0; //  offset des variables declarées
 int condition_number=0; // pour chaque instruction if/while
  
 
@@ -71,6 +71,19 @@ char * type2string (int c) {
       return("type error");
     }  
 };
+char op_code2(int type1, int operation, int type2){
+    if (type1 == INT && type2 == INT) {
+        return 'I';
+    } else if (type1 == FLOAT && type2 == FLOAT) {
+        return 'F';
+    } else if (type1 == INT && type2 == FLOAT) {
+        printf("I2F1 // converting first arg to float\n");  
+        return 'F';
+    } else if (type1 == FLOAT && type2 == INT) {
+        printf("I2F2 // converting second arg to float\n");
+        return 'F';
+    }
+}
 
 int op_code(int type1, int operation, int type2) {
   const char* op_int[] = {"ADDI", "SUBI", "MULTI", "DIVI", "LTI", "GTI", "EQI", "DIFI", "ANDI", "ORI"}; //improvisées apres GTI (à demander)
@@ -96,9 +109,9 @@ int op_code(int type1, int operation, int type2) {
 
 // ajoute le symbole "symbole_name" de type "type" et depth "depth" dans notre table de symboles
 void add_symbol(char* symbol_name, int type, int depth){
-  attribute att = makeSymbol(type, global_offset, depth);
+  attribute att = makeSymbol(type, current_offset, depth);
   set_symbol_value(symbol_name, att);
-  global_offset++;
+  current_offset++;
 };
 
 void remove_symbol(char* symbol_name, int depth){
@@ -213,12 +226,13 @@ fun_body : fao block faf       {}
 
 fao : AO                       {
   printf("{\n");
-  printf("// Entering function block of depth %d\n", ++depth);; //so that a declaration in the main function would be of depth 1
+  printf("// Entering function block of depth %d\n", ++depth); //so that a declaration in the main function would be of depth 1
 }
 ;
 faf : AF                       {
   printf("// Exiting function block of depth %d\n", depth--);
   printf("}\n");
+  current_offset = 1;
 }
 ;
 
@@ -243,7 +257,7 @@ var_decl : type vlist          {}
 vlist: vlist vir ID            {
   add_symbol($3, $<int_value>0, $<int_value>-2);
   $$ = $1;
-  printf("// Declare %s of type %s with offset %d at depth %d\n", $3, type2string($<int_value>0), global_offset-1, depth); //-2 fait reference à af qui stocke le depth courant
+  printf("// Declare %s of type %s with offset %d at depth %d\n", $3, type2string($<int_value>0), current_offset-1, depth); //-2 fait reference à af qui stocke le depth courant
   if ($<int_value>0 == INT) {
     printf("LOADI(0)\n\n");
   } else if ($<int_value>0 == FLOAT) {
@@ -254,7 +268,7 @@ vlist: vlist vir ID            {
 } // récursion gauche pour traiter les variables déclararées de gauche à droite
 | ID                           {
   add_symbol($1, $<int_value>0, depth);
-  printf("// Declare %s of type %s with offset %d at depth %d\n", $1, type2string($<int_value>0), global_offset-1, depth); //-2 fait reference à af qui stocke le depth courant
+  printf("// Declare %s of type %s with offset %d at depth %d\n", $1, type2string($<int_value>0), current_offset-1, depth); //-2 fait reference à af qui stocke le depth courant
   if ($<int_value>0 == INT) {
     printf("LOADI(0)\n\n");
   } else if ($<int_value>0 == FLOAT) {
@@ -365,7 +379,7 @@ exp
                                 }
                               }
          // -x + y lue comme (- x) + y  et pas - (x + y)
-| exp PLUS exp                { $$=op_code($1, 0, $3); }
+| exp PLUS exp                { $$=op_code($1, 0, $3); printf("ADD%s") }
 | exp MOINS exp               { $$=op_code($1, 1, $3); }
 | exp STAR exp                { $$=op_code($1, 2, $3); }
 | exp DIV exp                 { $$=op_code($1, 3, $3); }
@@ -378,8 +392,13 @@ exp
   $$=att->type;
   if (att->depth == 0) {
     printf("// Loading global var %s adress (used at depth %d)\n", $1, depth);
-    printf("LOADI(%d) // loading offset %d of variable %s\n", att->offset, att->offset, $1);
-
+    if (att->type == INT) {
+      printf("LOADI(%d) // loading offset %d of variable %s\n", att->offset, att->offset, $1);
+    } else if (att->type == FLOAT) {
+      printf("LOADF(%d) // loading offset %d of variable %s\n", att->offset, att->offset, $1);
+    } else {
+      yyerror("Erreur de type.");
+    }
   } else if (att->depth > 0 && depth >= att->depth) { // on esssaie d'acceder à une variable dans notre portée
     printf("// Loading local var %s adress declared at depth %d (used at depth %d)\n", $1, depth, att->depth);
     if (att->type == INT || att->type == FLOAT) {
