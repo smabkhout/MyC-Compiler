@@ -71,19 +71,6 @@ char * type2string (int c) {
       return("type error");
     }  
 };
-char op_code2(int type1, int operation, int type2){
-    if (type1 == INT && type2 == INT) {
-        return 'I';
-    } else if (type1 == FLOAT && type2 == FLOAT) {
-        return 'F';
-    } else if (type1 == INT && type2 == FLOAT) {
-        printf("I2F1 // converting first arg to float\n");  
-        return 'F';
-    } else if (type1 == FLOAT && type2 == INT) {
-        printf("I2F2 // converting second arg to float\n");
-        return 'F';
-    }
-}
 
 int op_code(int type1, int operation, int type2) {
   const char* op_int[] = {"ADDI", "SUBI", "MULTI", "DIVI", "LTI", "GTI", "EQI", "DIFI", "ANDI", "ORI"}; //improvisées apres GTI (à demander)
@@ -227,12 +214,13 @@ fun_body : fao block faf       {}
 fao : AO                       {
   printf("{\n");
   printf("// Entering function block of depth %d\n", ++depth); //so that a declaration in the main function would be of depth 1
+  current_offset = 1;
 }
 ;
 faf : AF                       {
   printf("// Exiting function block of depth %d\n", depth--);
   printf("}\n");
-  current_offset = 1;
+  current_offset = 1;//pas necessaire puisque les declarations tout le temps au début.
 }
 ;
 
@@ -310,10 +298,10 @@ ao block af                   {}
 
 // Accolades explicites pour gerer l'entrée et la sortie d'un sous-bloc
 
-ao : AO                       {  printf("SAVEBP // Entering instructions block of depth %d\n", ++depth); }
+ao : AO                       {  printf("SAVEBP // Entering instructions block of depth %d\n", ++depth); current_offset = 1; }
 ;
 
-af : AF                       { printf("RESTOREBP // Exiting instructions block of depth %d\n", depth--); }
+af : AF                       { printf("RESTOREBP // Exiting instructions block of depth %d\n", depth--); current_offset = 1; }
 ;
 
 
@@ -379,7 +367,7 @@ exp
                                 }
                               }
          // -x + y lue comme (- x) + y  et pas - (x + y)
-| exp PLUS exp                { $$=op_code($1, 0, $3); printf("ADD%s") }
+| exp PLUS exp                { $$=op_code($1, 0, $3); }
 | exp MOINS exp               { $$=op_code($1, 1, $3); }
 | exp STAR exp                { $$=op_code($1, 2, $3); }
 | exp DIV exp                 { $$=op_code($1, 3, $3); }
