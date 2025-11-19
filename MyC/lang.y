@@ -378,13 +378,8 @@ exp
   $$=att->type;
   if (att->depth == 0) {
     printf("// Loading global var %s adress (used at depth %d)\n", $1, depth);
-    if (att->type == INT) {
-      printf("LOADI(%d) // loading offset %d of variable %s\n", att->offset, att->offset, $1);
-    } else if (att->type == FLOAT) {
-      printf("LOADF(%d) // loading offset %d of variable %s\n", att->offset, att->offset, $1);
-    } else {
-      yyerror("Erreur de type.");
-    }
+    printf("LOADI(%d) // loading offset %d of variable %s\n", att->offset, att->offset, $1);
+
   } else if (att->depth > 0 && depth >= att->depth) { // on esssaie d'acceder à une variable dans notre portée
     printf("// Loading local var %s adress declared at depth %d (used at depth %d)\n", $1, depth, att->depth);
     if (att->type == INT || att->type == FLOAT) {
