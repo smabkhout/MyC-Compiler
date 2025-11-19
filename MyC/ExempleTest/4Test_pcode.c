@@ -48,6 +48,5 @@ STORE
 RESTOREBP // Exiting instructions block of depth 2
 End_0:
 // Fin conditionelle 0
-LOADI(0)
 // Exiting function block of depth 1
 }

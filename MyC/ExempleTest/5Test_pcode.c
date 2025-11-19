@@ -48,6 +48,5 @@ RESTOREBP // Exiting instructions block of depth 2
 GOTO(StartLoop_0)
 // Fin boucle while 0
 EndLoop_0:
-LOADI(0)
 // Exiting function block of depth 1
 }

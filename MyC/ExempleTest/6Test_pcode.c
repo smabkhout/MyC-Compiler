@@ -60,6 +60,5 @@ RESTOREBP // Exiting instructions block of depth 2
 False_0:
 // la condition 0 est fausse
 // Fin conditionelle 0
-LOADI(0)
 // Exiting function block of depth 1
 }
