@@ -15,51 +15,40 @@ void init_glob_var(){
 // Declare x of type int with offset 0 at depth 0
 LOADI(0)
 
-// Declare z of type int with offset 1 at depth 0
-LOADI(0)
-
-// Declare C of type int with offset 2 at depth 0
+// Declare y of type int with offset 1 at depth 0
 LOADI(0)
 
 }
 
 void pcode_main() {
 // Entering function block of depth 1
-// Declare y of type int with offset 1 at depth 1
+// Declare z of type int with offset 1 at depth 1
 LOADI(0)
 
-SAVEBP // Entering instructions block of depth 2
-<<<<<<< HEAD
-// Declare x of type int with offset 1 at depth 2
+// Declare w of type int with offset 2 at depth 1
 LOADI(0)
 
-LOADI(4)
-// Loading local var x adress declared at depth 2 (used at depth 2)
+LOADI(5)
+// Loading local var z adress declared at depth 1 (used at depth 1)
 LOADBP
-SHIFT(1) // applying offset 1 of variable x
-// Storing variable x (right) value
+SHIFT(1) // applying offset 1 of variable z
+// Storing variable z (right) value
 STORE
-// Loading local var x adress declared at depth 2 (used at depth 2)
-LOADBP
-SHIFT(1) // applying offset 1 of variable x
-// Loading variable x (right) value
-=======
+SAVEBP // Entering instructions block of depth 2
 SAVEBP // Entering instructions block of depth 3
-SAVEBP // Entering instructions block of depth 4
-SAVEBP // Entering instructions block of depth 5
-// Loading global var C adress (used at depth 5)
+LOADI(5)
+// Loading local var z adress declared at depth 1 (used at depth 3)
 LOADBP
-LOAD // accessing upper block depth 4
-LOAD // accessing upper block depth 3
 LOAD // accessing upper block depth 2
 LOAD // accessing upper block depth 1
-LOAD // accessing upper block depth 0
-SHIFT(2) // applying offset 2 of variable C
-// Loading variable C (right) value
->>>>>>> refs/remotes/origin/master
+SHIFT(1) // applying offset 1 of variable z
+// Loading variable z (right) value
 LOAD
-RESTOREBP // Exiting instructions block of depth 5
-RESTOREBP // Exiting instructions block of depth 4
+ADDI
+// Loading global var y adress (used at depth 3)
+LOADI(1) // loading offset 1 of variable y
+// Storing variable y (right) value
+STORE
 RESTOREBP // Exiting instructions block of depth 3
 RESTOREBP // Exiting instructions block of depth 2
 // Exiting function block of depth 1

@@ -30,7 +30,6 @@ STORE
 StartLoop_0: // chargement condition boucle while 0
 // Loading global var x adress (used at depth 1)
 LOADI(0) // loading offset 0 of variable x
-SHIFT(0) // applying offset 0 of variable x
 // Loading variable x (right) value
 LOAD
 LOADI(0)
@@ -42,7 +41,6 @@ SAVEBP // Entering instructions block of depth 2
 LOADBP
 LOAD // accessing upper block depth 1
 LOAD // accessing upper block depth 0
-SHIFT(0) // applying offset 0 of variable x
 // Loading variable x (right) value
 LOAD
 LOADI(1)

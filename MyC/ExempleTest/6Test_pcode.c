@@ -25,6 +25,7 @@ void pcode_main() {
 // Debut conditionelle 0
 // Loading global var x adress (used at depth 1)
 LOADI(1) // loading offset 1 of variable x
+SHIFT(1) // applying offset 1 of variable x
 // Loading variable x (right) value
 LOAD
 LOADI(0)
@@ -34,7 +35,9 @@ IFN(False_0)
 SAVEBP // Entering instructions block of depth 2
 StartLoop_1: // chargement condition boucle while 1
 // Loading global var y adress (used at depth 2)
-LOADI(0) // loading offset 0 of variable y
+LOADBP
+LOAD // accessing upper block depth 1
+LOAD // accessing upper block depth 0
 // Loading variable y (right) value
 LOAD
 LOADI(10)
@@ -43,7 +46,10 @@ IFN(EndLoop_1)
 // Debut boucle while 1
 SAVEBP // Entering instructions block of depth 3
 // Loading global var y adress (used at depth 3)
-LOADI(0) // loading offset 0 of variable y
+LOADBP
+LOAD // accessing upper block depth 2
+LOAD // accessing upper block depth 1
+LOAD // accessing upper block depth 0
 // Loading variable y (right) value
 LOAD
 LOADI(1)
