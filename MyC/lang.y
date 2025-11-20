@@ -89,8 +89,9 @@ int load_func(char *symbol){
           step++;
         }
     }
-    printf("SHIFT(%d) // applying offset %d of variable %s\n", att->offset, att->offset, symbol);
-   
+    if (att->offset != 0){
+        printf("SHIFT(%d) // applying offset %d of variable %s\n", att->offset, att->offset, symbol);
+    }
   } else if (att->depth > 0 && depth >= att->depth) { // on esssaie d'acceder à une variable dans notre portée
     printf("// Loading local var %s adress declared at depth %d (used at depth %d)\n", symbol, att->depth, depth);
     int step = att->depth;

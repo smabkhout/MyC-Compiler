@@ -23,6 +23,7 @@ LOADF(3.500000)
 LOADI(4)
 I2F2 // converting second arg to float
 MULTF
+<<<<<<< HEAD
 I2F1 // converting first arg to float
 ADDF
 LOADI(2)
@@ -31,5 +32,8 @@ LOADI(7)
 LOADI(1)
 ADDI
 MULTI
+=======
+ADDI
+>>>>>>> refs/remotes/origin/master
 // Exiting function block of depth 1
 }
