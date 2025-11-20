@@ -4,10 +4,10 @@ float z, t;
 float pi;
 
 void main(){
+   x;
+   x + y;
    x = 5;
    y = 6;
-   x + y;
-   t = 3.5;
+   t = 3;
    z = t + x + y;
-   z - pi; 
 }

@@ -15,6 +15,9 @@ void init_glob_var(){
 // Declare x of type int with offset 0 at depth 0
 LOADI(0)
 
+// Declare y of type int with offset 1 at depth 0
+LOADI(0)
+
 }
 
 void pcode_main() {
@@ -27,6 +30,7 @@ STORE
 StartLoop_0: // chargement condition boucle while 0
 // Loading global var x adress (used at depth 1)
 LOADI(0) // loading offset 0 of variable x
+SHIFT(0) // applying offset 0 of variable x
 // Loading variable x (right) value
 LOAD
 LOADI(0)
@@ -35,7 +39,10 @@ IFN(EndLoop_0)
 // Debut boucle while 0
 SAVEBP // Entering instructions block of depth 2
 // Loading global var x adress (used at depth 2)
-LOADI(0) // loading offset 0 of variable x
+LOADBP
+LOAD // accessing upper block depth 1
+LOAD // accessing upper block depth 0
+SHIFT(0) // applying offset 0 of variable x
 // Loading variable x (right) value
 LOAD
 LOADI(1)

@@ -28,18 +28,18 @@ LOADI(0) // loading offset 0 of variable x
 // Storing variable x (right) value
 STORE
 SAVEBP // Entering instructions block of depth 2
-// Declare x of type int with offset 2 at depth 2
+// Declare x of type int with offset 1 at depth 2
 LOADI(0)
 
 LOADI(4)
 // Loading local var x adress declared at depth 2 (used at depth 2)
 LOADBP
-SHIFT(2) // applying offset 2 of variable x
+SHIFT(1) // applying offset 1 of variable x
 // Storing variable x (right) value
 STORE
 // Loading local var x adress declared at depth 2 (used at depth 2)
 LOADBP
-SHIFT(2) // applying offset 2 of variable x
+SHIFT(1) // applying offset 1 of variable x
 // Loading variable x (right) value
 LOAD
 // Loading local var y adress declared at depth 2 (used at depth 1)
