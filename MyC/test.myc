@@ -1,0 +1,12 @@
+int x, y;
+
+void main() {
+    int z;
+    int w;
+
+    z = 5;
+
+    {{
+        y = 5+z;
+    }}
+}
