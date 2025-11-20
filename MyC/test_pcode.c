@@ -15,7 +15,10 @@ void init_glob_var(){
 // Declare x of type int with offset 0 at depth 0
 LOADI(0)
 
-// Declare y of type int with offset 1 at depth 0
+// Declare a of type int with offset 1 at depth 0
+LOADI(0)
+
+// Declare y of type int with offset 2 at depth 0
 LOADI(0)
 
 }
@@ -46,7 +49,11 @@ SHIFT(1) // applying offset 1 of variable z
 LOAD
 ADDI
 // Loading global var y adress (used at depth 3)
-LOADI(1) // loading offset 1 of variable y
+LOADBP
+LOAD // accessing upper block depth 2
+LOAD // accessing upper block depth 1
+LOAD // accessing upper block depth 0
+SHIFT(2) // applying offset 2 of variable y
 // Storing variable y (right) value
 STORE
 RESTOREBP // Exiting instructions block of depth 3

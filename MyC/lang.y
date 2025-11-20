@@ -159,20 +159,28 @@ void aff_func(char* symbol, int exp_type) {
 
   if (att->depth == 0) {
     printf("// Loading global var %s adress (used at depth %d)\n", symbol, depth);
-    if (att->type == INT) {
-      printf("LOADI(%d) // loading offset %d of variable %s\n", att->offset, att->offset, symbol);
-    } else if (att->type == FLOAT) {
-      printf("LOADF(%d) // loading offset %d of variable %s\n", att->offset, att->offset, symbol);
+    if (depth == 1){
+        printf("LOADI(%d) // loading offset %d of variable %s\n", att->offset, att->offset, symbol);
     } else {
-      yyerror("Erreur de type lors de l'affectation.");
+        int step = att->depth;
+        printf("LOADBP\n");
+        while (step < depth){
+          printf("LOAD // accessing upper block depth %d\n", depth-(step-att->depth+1));
+          step++;
+        }
+    }
+    if (att->offset != 0){
+        printf("SHIFT(%d) // applying offset %d of variable %s\n", att->offset, att->offset, symbol);
     }
   } else if (att->depth > 0 && depth >= att->depth) { // on esssaie d'acceder à une variable dans notre portée
-    printf("// Loading local var %s adress declared at depth %d (used at depth %d)\n", symbol, depth, att->depth);
-    if (att->type == INT || att->type == FLOAT) {
-      printf("LOADBP\nSHIFT(%d) // applying offset %d of variable %s\n", att->offset, att->offset, symbol);
-    } else {
-      yyerror("Erreur de type lors de l'affectation.");
+    printf("// Loading local var %s adress declared at depth %d (used at depth %d)\n", symbol, att->depth, depth);
+    int step = att->depth;
+    printf("LOADBP\n");
+    while (step < depth){
+      printf("LOAD // accessing upper block depth %d\n", depth-(step-att->depth+1));
+      step++;
     }
+    printf("SHIFT(%d) // applying offset %d of variable %s\n", att->offset, att->offset, symbol);
   } else if (att->depth > 0 && depth < att->depth) { // la variable est en dehors de notre portée !!
     yyerror("Attemtping to use variable outside your scope");
   } else { yyerror("NEGATIVE DEPTH ?!?!"); }
