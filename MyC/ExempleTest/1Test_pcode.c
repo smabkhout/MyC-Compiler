@@ -23,30 +23,6 @@ LOADF(3.500000)
 LOADI(4)
 I2F2 // converting second arg to float
 MULTF
-I2F1 // converting first arg to float
-ADDF
-LOADI(5)
-MINUSI
-LOADI(9)
-LOADI(4)
-LOADF(8.500000)
-I2F1 // converting first arg to float
-SUBF
-I2F1 // converting first arg to float
-MULTF
-I2F1 // converting first arg to float
-ADDF
-LOADF(1.200000)
-LOADI(6)
-I2F2 // converting second arg to float
-ADDF
-LOADF(4.800000)
-LOADI(7)
-I2F2 // converting second arg to float
-SUBF
-LOADI(12)
-I2F2 // converting second arg to float
-MULTF
-SUBF
+ADDI
 // Exiting function block of depth 1
 }

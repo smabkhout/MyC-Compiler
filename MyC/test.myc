@@ -1,11 +1,5 @@
-int x;
+int x, z, C;
 void main(){
 int y;
-x = 3;
-{
-int x;
-x = 4;
-y = x;
-}
-y;
+{{{{C;}}}}
 }
