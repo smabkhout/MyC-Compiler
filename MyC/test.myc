@@ -3,6 +3,8 @@ int x, y;
 void main() {
     int z;
     5+4;
+    if (5) 7; else 5555;
+    if (8998) 7; else 5555;
     if (8998 && 5) 7; else 5555;
     if (3444 || 9) 2; else 4444;
 }

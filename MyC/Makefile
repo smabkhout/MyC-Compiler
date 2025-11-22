@@ -1,7 +1,7 @@
 all :	lang
 
 syntax : lexic	lang.y
-	bison -v -y  -d  lang.y
+	bison -v -y  -d  lang.y #-Wcounterexamples
 lexic : lang.l
 	flex lang.l
 

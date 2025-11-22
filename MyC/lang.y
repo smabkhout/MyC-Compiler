@@ -206,9 +206,9 @@ void end_glob_var_decl(){
 %start prog  
 
 // liste de tous les type des attributs des non terminaux que vous voulez manipuler l'attribut (il faudra en ajouter plein ;-) )
-%type <type_value> type exp  typename vlist block if while
+%type <type_value> type exp  typename vlist block 
 %type <string_value> fun_head
-%type <label_value> bool_op
+%type <label_value> bool_op bool_cond if else while
 
 %%
 
@@ -376,18 +376,25 @@ cond :
 if bool_cond inst  elsop       { printf("// Fin conditionelle %d\n", $1); }
 ;
 
-elsop : else inst              { printf("End_%d:\n", $<int_value>-2); }
-|                  %prec IFX   { printf("False_%d:\n// la condition %d est fausse\n", $<int_value>-2, $<int_value>-2); } // juste un "truc" pour éviter le message de conflit shift / reduce
+elsop : else inst              { printf("End_%d:\n", $<label_value>-2); }
+|                  %prec IFX   { printf("False_%d:\n// la condition %d est fausse\n", $<label_value>-2, $<label_value>-2); } // juste un "truc" pour éviter le message de conflit shift / reduce
 ;
 
 
-bool_cond : PO exp PF         { printf("IFN(False_%d)\n// la condition %d est vraie\n", $<int_value>0, $<int_value>0); }
+bool_cond : PO exp PF         {
+  printf("IFN(False_%d)\n// la condition %d est vraie\n", $<label_value>0, $<label_value>0);
+  if ($$==OR) printf("Lazy_Then_%d:\n", $<label_value>0);
+  }
 ;
 
 if : IF                       { $$=condition_number++; printf("// Debut conditionelle %d\n", $$); }
 ;
 
-else : ELSE                   { printf("GOTO(End_%d)\nFalse_%d:\n// la condition %d est fausse\nLazy_%d:\n", $<int_value>-2, $<int_value>-2, $<int_value>-2, $<int_value>-2); }
+else : ELSE                   {
+  printf("GOTO(End_%d)\n", $<label_value>-2);
+  if ($$==AND) printf("Lazy_Else_%d:\n", $<label_value>-2);
+  printf("False_%d:\n// la condition %d est fausse\n", $<label_value>-2, $<label_value>-2);
+  }
 ;
 
 // IV.4. Iterations
@@ -395,7 +402,7 @@ else : ELSE                   { printf("GOTO(End_%d)\nFalse_%d:\n// la condition
 loop : while while_cond inst  { printf("GOTO(StartLoop_%d)\n// Fin boucle while %d\nEndLoop_%d:\n", $1, $1, $1); }
 ;
 
-while_cond : PO exp PF        { printf("IFN(EndLoop_%d)\n// Debut boucle while %d\n", $<int_value>0, $<int_value>0);} // on stocke la valeur du depth dans loop pour pouvoir y acceder apres dans inst (inst de if n'est pas comme inst de block/fun)
+while_cond : PO exp PF        { printf("IFN(EndLoop_%d)\n// Debut boucle while %d\n", $<label_value>0, $<label_value>0);} // on stocke la valeur du depth dans loop pour pouvoir y acceder apres dans inst (inst de if n'est pas comme inst de block/fun)
 
 while : WHILE                 { $$=condition_number++; printf("StartLoop_%d: // chargement condition boucle while %d\n", $$, $$); }
 ;
@@ -435,17 +442,18 @@ exp
 | exp EQUAL exp               { $$=op_code($1, 6, $3); } //improvisées à cause du manque des exemples
 | exp DIFF exp                { $$=op_code($1, 7, $3); }
 | exp bool_op exp             {
+  $$=$<label_value>2;
   if ($<label_value>2 == AND) {
-    $$=op_code($1, 8, $3);
+    // $$=op_code($1, 8, $3); // no need for ANDI if we are using lazy eval
   } else if ($<label_value>2 == OR) {
-    $$=op_code($1, 9, $3);
+    // $$=op_code($1, 9, $3); // same
   }
   } //à modifier pour implémenter la gestion des Booléens paresseuse
 
 ;
 
-bool_op : AND                 { $$=AND; printf("IFN(Lazy_%d)\n", $<int_value>-2); } 
-| OR                          { $$=OR; printf("IFN(Statement_2)\nGOTO(Lazy_%d) //evaluation paresseuse\nStatement_2:\n", $<int_value>-2); }
+bool_op : AND                 { $$=AND; printf("IFN(Lazy_Else_%d)\n", $<int_value>-2); } 
+| OR                          { $$=OR; printf("IFN(Skip_%d)\nGOTO(Lazy_Then_%d) //evaluation paresseuse\nSkip_%d:\n", $<int_value>-2, $<int_value>-2, $<int_value>-2); }
 ;
 
 // V.3 Applications de fonctions
