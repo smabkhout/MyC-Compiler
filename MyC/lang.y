@@ -208,6 +208,7 @@ void end_glob_var_decl(){
 // liste de tous les type des attributs des non terminaux que vous voulez manipuler l'attribut (il faudra en ajouter plein ;-) )
 %type <type_value> type exp  typename vlist block if while
 %type <string_value> fun_head
+%type <label_value> bool_op
 
 %%
 
@@ -379,13 +380,14 @@ elsop : else inst              { printf("End_%d:\n", $<int_value>-2); }
 |                  %prec IFX   { printf("False_%d:\n// la condition %d est fausse\n", $<int_value>-2, $<int_value>-2); } // juste un "truc" pour éviter le message de conflit shift / reduce
 ;
 
-bool_cond : PO exp PF         { printf("IFN(False_%d)\n// la condition %d est vraie\n", $<int_value>0, $<int_value>0); } // on stocke la valeur du depth dans cond pour pouvoir y acceder apres dans inst (inst de if n'est pas comme inst de block/fun)
+
+bool_cond : PO exp PF         { printf("IFN(False_%d)\n// la condition %d est vraie\n", $<int_value>0, $<int_value>0); }
 ;
 
 if : IF                       { $$=condition_number++; printf("// Debut conditionelle %d\n", $$); }
 ;
 
-else : ELSE                   { printf("GOTO(End_%d)\nFalse_%d:\n// la condition %d est fausse\n", $<int_value>-2, $<int_value>-2, $<int_value>-2); }
+else : ELSE                   { printf("GOTO(End_%d)\nFalse_%d:\n// la condition %d est fausse\nLazy_%d:\n", $<int_value>-2, $<int_value>-2, $<int_value>-2, $<int_value>-2); }
 ;
 
 // IV.4. Iterations
@@ -432,9 +434,18 @@ exp
 | exp SUP exp                 { $$=op_code($1, 5, $3); }
 | exp EQUAL exp               { $$=op_code($1, 6, $3); } //improvisées à cause du manque des exemples
 | exp DIFF exp                { $$=op_code($1, 7, $3); }
-| exp AND exp                 { $$=op_code($1, 8, $3); } //à modifier pour implémenter la gestion des Booléens paresseuse
-| exp OR exp                  { $$=op_code($1, 9, $3); } //aussi
+| exp bool_op exp             {
+  if ($<label_value>2 == AND) {
+    $$=op_code($1, 8, $3);
+  } else if ($<label_value>2 == OR) {
+    $$=op_code($1, 9, $3);
+  }
+  } //à modifier pour implémenter la gestion des Booléens paresseuse
 
+;
+
+bool_op : AND                 { $$=AND; printf("IFN(Lazy_%d)\n", $<int_value>-2); } 
+| OR                          { $$=OR; printf("IFN(Statement_2)\nGOTO(Lazy_%d) //evaluation paresseuse\nStatement_2:\n", $<int_value>-2); }
 ;
 
 // V.3 Applications de fonctions
