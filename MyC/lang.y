@@ -15,7 +15,8 @@ void yyerror (char* s) {
   }
 		
 int depth=0; // block depth
-int current_offset=0; //  offset des variables declarées
+int current_offset=0; //  offset des variables declarées (hors fonctions)
+int func_args_offset=0; // offset des arguments des fonctions
 int condition_number=0; // pour chaque instruction if/while
  
 
@@ -207,7 +208,7 @@ void end_glob_var_decl(){
 
 // liste de tous les type des attributs des non terminaux que vous voulez manipuler l'attribut (il faudra en ajouter plein ;-) )
 %type <type_value> type exp  typename vlist block 
-%type <string_value> fun_head
+%type <string_value> fun_head params vir
 %type <label_value> bool_op bool_cond if else while
 
 %%
@@ -240,17 +241,32 @@ fun_head : ID po PF            {
   // Pas de déclaration de fonction à l'intérieur de fonctions !
   if (depth>0) yyerror("Function must be declared at top level~!\n");
   printf("void pcode_%s() ", $1);
+  add_symbol($1, $<int_value>0, 0);
   }
 
 | ID po params PF              {
+  $3=$1;
    // Pas de déclaration de fonction à l'intérieur de fonctions !
   if (depth>0) yyerror("Function must be declared at top level~!\n");
   printf("void pcode_%s() ", $1);
+  add_symbol($1, $<int_value>0, 0);
  }
 ;
 
-params: type ID vir params     {} // récursion droite pour numéroter les paramètres du dernier au premier
-| type ID                      {}
+params: type ID vir params     {
+  $4=$$;
+  $3=$$;
+  //printf("// la valeur dans params est %s et dans params est %s\n", $4, $4);
+  //printf("// la valeur dans vir est %s et dans params est %s\n", $3, $4);
+  attribute att = makeSymbol($<int_value>1, --func_args_offset, 1);
+  set_symbol_value($<string_value>2, att);
+  printf("// Argument %s of function %s in TDS with offset %d\n", $<string_value>2, $<string_value>-1, att->offset);
+} // récursion droite pour numéroter les paramètres du dernier au premier
+| type ID                      {
+  attribute att = makeSymbol($<int_value>1, --func_args_offset, 1);
+  set_symbol_value($<string_value>2, att);
+  printf("// Argument %s of function %s in TDS with offset %d\n", $<string_value>2, $<string_value>0, att->offset);
+}
 
 
 vir : VIR                      {}
@@ -460,18 +476,25 @@ bool_op : AND                 { $$=AND; printf("IFN(Lazy_Else_%d)\n", $<int_valu
 
 
 app : fid PO args PF          {
+  printf("CALL(pcode_%s)\n", $<string_value>1);
   printf("RESTOREBP\n");
 }
 ;
 
 fid : ID                      {
-  printf("// loading returned value\n// loading function %s arguments\n", $<string_value>1);
-  printf("SAVEBP\n");
-  printf("CALL(pcode_%s)\n", $<string_value>1);
+  printf("// loading default returned value\n");
+  attribute func = get_symbol_value($<string_value>1);
+  if (func->type == INT) { printf("LOADI(0)\n"); }
+  else if (func->type == FLOAT) { printf("LOADF(0.0)\n"); }
+  printf("// loading function %s arguments\n", $<string_value>1);
 }
 
-args :  arglist               {}
-|                             {}
+args :  arglist               {
+  printf("SAVEBP\n");
+}
+|                             {
+  printf("SAVEBP\n");
+}
 ;
 
 arglist : arglist VIR exp     {} // récursion gauche pour empiler les arguements de la fonction de gauche à droite

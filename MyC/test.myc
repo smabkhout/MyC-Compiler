@@ -1,9 +1,9 @@
-int one() {
+int one(int y, int x) {
   return 1;
   }
 
 
 void main(){
  int x;
- x = one();
+ x = one(5, 98998, 4+5);
 }
