@@ -261,12 +261,12 @@ fun_body : fao block faf       {}
 
 fao : AO                       {
   printf("{\n");
-  printf("// Entering function block of depth %d\n", ++depth); //so that a declaration in the main function would be of depth 1
+  ++depth;
   current_offset = 1;
 }
 ;
 faf : AF                       {
-  printf("// Exiting function block of depth %d\n", depth--);
+  --depth;
   printf("}\n");
   current_offset = 1;//pas necessaire puisque les declarations tout le temps au début.
 }
@@ -459,10 +459,16 @@ bool_op : AND                 { $$=AND; printf("IFN(Lazy_Else_%d)\n", $<int_valu
 // V.3 Applications de fonctions
 
 
-app : fid PO args PF          {}
+app : fid PO args PF          {
+  printf("RESTOREBP\n");
+}
 ;
 
-fid : ID                      {}
+fid : ID                      {
+  printf("// loading returned value\n// loading function %s arguments\n", $<string_value>1);
+  printf("SAVEBP\n");
+  printf("CALL(pcode_%s)\n", $<string_value>1);
+}
 
 args :  arglist               {}
 |                             {}
