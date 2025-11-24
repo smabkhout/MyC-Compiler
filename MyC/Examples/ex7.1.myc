@@ -1,0 +1,8 @@
+void one() {
+  1;
+  }
+
+
+void main(){
+  one();
+}

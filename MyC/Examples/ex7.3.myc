@@ -1,0 +1,9 @@
+int plusUn(int x) {
+  return (x+1);
+  }
+
+
+void main(){
+ int x;
+ x = plusUn (1);
+}
