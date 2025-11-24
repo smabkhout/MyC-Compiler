@@ -245,7 +245,6 @@ fun_head : ID po PF            {
   }
 
 | ID po params PF              {
-  $3=$1;
    // Pas de déclaration de fonction à l'intérieur de fonctions !
   if (depth>0) yyerror("Function must be declared at top level~!\n");
   printf("void pcode_%s() ", $1);
