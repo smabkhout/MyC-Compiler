@@ -44,4 +44,7 @@ attribute get_symbol_value(char * symb_id);
 /* add the symbol symb_id with given value */
 attribute set_symbol_value(char * symb_id,attribute value);
 
+/* remove all the symbols of the current block */
+int removeLocalSymbols(int depth);
+
 #endif

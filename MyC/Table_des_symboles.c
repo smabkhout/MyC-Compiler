@@ -37,7 +37,6 @@ attribute makeSymbol(int type, int offset, int depth)
 }
 
 
-
 /* The storage structure is implemented as a linked chain */
 
 /* linked element def */
@@ -80,3 +79,50 @@ attribute set_symbol_value(char * symb_id,attribute value) {
 	return storage -> symbol_value;
 }
 
+int removeSymbol(char* symb_id) {
+	elem * tracker=storage;
+	if (!tracker) { fprintf(stderr,"Table vide!!\n"); }
+
+	// check the first element
+	if (strcmp(tracker->symbol_name, symb_id)) {
+		printf("// Removing variable %s at depth %d\n", symb_id, tracker->symbol_value->depth);
+		storage = tracker->next;
+		free(tracker->symbol_value);
+		free(tracker);
+		return 0;
+	}
+
+	/* look into the linked list for the symbol value */
+	while (tracker->next) {
+	  if (! strcmp(tracker->next-> symbol_name, symb_id)) {
+		printf("// Removing variable %s at depth %d\n", symb_id, tracker->next->symbol_value->depth);
+		elem* next = tracker->next->next;
+		elem* removed = tracker->next;
+		tracker->next = next;
+		free(removed->symbol_value);
+		free(removed);
+	    return 0;
+	  }
+	  tracker = tracker -> next;
+	}
+    
+	/* if not found does cause an error */
+	fprintf(stderr,"Erreur : symbole %s absent de la table des symboles\n", symb_id);
+	return 1;
+} // so far not needed
+
+
+int removeLocalSymbols(int depth){
+	elem * tracker=storage;
+	if (!tracker) { fprintf(stderr,"Table vide!!\n"); }
+	/* look into the linked list for the symbol value */
+	while (tracker && tracker->symbol_value->depth == depth) {
+		printf("// Removing variable %s at depth %d\n", tracker->symbol_name, depth);
+		storage = tracker->next;
+		elem *removed = tracker;
+		free(removed->symbol_value);
+		free(removed);
+		tracker = storage;
+	}
+	return 0;
+};

@@ -142,10 +142,6 @@ void add_symbol(char* symbol_name, int type, int depth){
   current_offset++;
 };
 
-void remove_symbol(char* symbol_name, int depth){
-  // to be done in order to remove symbols at the end of their scope (to be called at the af/faf instruction)
-};
-
 // fonction pour deplacer le code d'affection
 void aff_func(char* symbol, int exp_type) {
   attribute att = get_symbol_value(symbol);
@@ -158,8 +154,6 @@ void aff_func(char* symbol, int exp_type) {
   if (exp_type == INT && att->type == FLOAT) {
     printf("I2F2\n");
   }
-  printf("Le type INT est %d et FLOAT est %d\n", INT, FLOAT);
-  printf("L expression est de type %d\n", exp_type);
 
   if (att->depth == 0) {
     printf("// Loading global var %s adress (used at depth %d)\n", symbol, depth);
@@ -283,6 +277,8 @@ fao : AO                       {
 }
 ;
 faf : AF                       {
+  int i = removeLocalSymbols(depth);
+  if (i) { yyerror("Erreur lors de la suppression des symboles locaux"); }
   --depth;
   printf("}\n\n");
   current_offset = 1; //pas necessaire puisque les declarations tout le temps au début.
@@ -451,7 +447,7 @@ exp
 | exp DIV exp                 { $$=op_code($1, 3, $3); }
 | PO exp PF                   { $$=$2; }
 | ID                          { $$=load_func($1); }
-| app                         { $$=$1; printf("// Le type de retour de l'appel est %d\n", $1); }
+| app                         { $$=$1; }
 | NUM                         { $$=INT; printf("LOADI(%i)\n", $1); }
 | DEC                         { $$=FLOAT; printf("LOADF(%f)\n", $1); }
 
@@ -484,8 +480,9 @@ bool_op : AND                 { $$=AND; printf("IFN(Lazy_Else_%d)\n", $<int_valu
 app : fid PO args PF          {
   printf("CALL(pcode_%s)\n", $<string_value>1);
   printf("RESTOREBP\n");
-  //$$=$1;
-  printf("// La valeur de $$ est %d\n", $$);
+
+  attribute func = get_symbol_value($<string_value>1);
+  $$=func->type;
 }
 ;
 
@@ -495,8 +492,6 @@ fid : ID                      {
   if (func->type == INT) { printf("LOADI(0)\n"); }
   else if (func->type == FLOAT) { printf("LOADF(0.0)\n"); }
   printf("// loading function %s arguments\n", $<string_value>1);
-  //$<int_value>-1=5;
-  printf("// The function's return type is %d\n", func->type);
 
 }
 
