@@ -363,7 +363,12 @@ ao block af                   {}
 ao : AO                       {  printf("SAVEBP // Entering instructions block of depth %d\n", ++depth); current_offset = 1; }
 ;
 
-af : AF                       { printf("RESTOREBP // Exiting instructions block of depth %d\n", depth--); current_offset = 1; }
+af : AF                       { 
+  int i = removeLocalSymbols(depth);
+  if (i) { yyerror("Erreur lors de la suppression des symboles locaux"); }
+  printf("RESTOREBP // Exiting instructions block of depth %d\n", depth--);
+  current_offset = 1;
+}
 ;
 
 
