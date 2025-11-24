@@ -18,6 +18,7 @@ int depth=0; // block depth
 int current_offset=0; //  offset des variables declarées (hors fonctions)
 int func_args_offset=0; // offset des arguments des fonctions
 int condition_number=0; // pour chaque instruction if/while
+char* current_func_name=NULL; // pour règler le problème de récursion à droite
  
 
 %}
@@ -157,6 +158,8 @@ void aff_func(char* symbol, int exp_type) {
   if (exp_type == INT && att->type == FLOAT) {
     printf("I2F2\n");
   }
+  printf("Le type INT est %d et FLOAT est %d\n", INT, FLOAT);
+  printf("L expression est de type %d\n", exp_type);
 
   if (att->depth == 0) {
     printf("// Loading global var %s adress (used at depth %d)\n", symbol, depth);
@@ -207,8 +210,8 @@ void end_glob_var_decl(){
 %start prog  
 
 // liste de tous les type des attributs des non terminaux que vous voulez manipuler l'attribut (il faudra en ajouter plein ;-) )
-%type <type_value> type exp  typename vlist block 
-%type <string_value> fun_head params vir
+%type <type_value> type exp  typename vlist block app fid
+%type <string_value> fun_head
 %type <label_value> bool_op bool_cond if else while
 
 %%
@@ -235,7 +238,10 @@ glob_fun_list : glob_fun_list fun {}
 fun : type fun_head fun_body   {}
 ;
 
-po: PO {end_glob_var_decl();}  // dirty trick to end function init_glob_var() definition in target code
+po: PO {
+  end_glob_var_decl();  // dirty trick to end function init_glob_var() definition in target code
+  current_func_name=$<string_value>0;
+}
   
 fun_head : ID po PF            {
   // Pas de déclaration de fonction à l'intérieur de fonctions !
@@ -253,18 +259,14 @@ fun_head : ID po PF            {
 ;
 
 params: type ID vir params     {
-  $4=$$;
-  $3=$$;
-  //printf("// la valeur dans params est %s et dans params est %s\n", $4, $4);
-  //printf("// la valeur dans vir est %s et dans params est %s\n", $3, $4);
   attribute att = makeSymbol($<int_value>1, --func_args_offset, 1);
   set_symbol_value($<string_value>2, att);
-  printf("// Argument %s of function %s in TDS with offset %d\n", $<string_value>2, $<string_value>-1, att->offset);
+  printf("// Argument %s of function %s in TDS with offset %d\n", $<string_value>2, current_func_name, att->offset);
 } // récursion droite pour numéroter les paramètres du dernier au premier
 | type ID                      {
   attribute att = makeSymbol($<int_value>1, --func_args_offset, 1);
   set_symbol_value($<string_value>2, att);
-  printf("// Argument %s of function %s in TDS with offset %d\n", $<string_value>2, $<string_value>0, att->offset);
+  printf("// Argument %s of function %s in TDS with offset %d\n", $<string_value>2, current_func_name, att->offset);
 }
 
 
@@ -282,8 +284,9 @@ fao : AO                       {
 ;
 faf : AF                       {
   --depth;
-  printf("}\n");
-  current_offset = 1;//pas necessaire puisque les declarations tout le temps au début.
+  printf("}\n\n");
+  current_offset = 1; //pas necessaire puisque les declarations tout le temps au début.
+  func_args_offset = 0;
 }
 ;
 
@@ -378,7 +381,11 @@ aff : ID EQ exp               {
 
 
 // IV.2 Return
-ret : RETURN exp              {}
+ret : RETURN exp              {
+  printf("// Loading function return address\nLOADBP\n");
+  printf("SHIFT(%d) // apply returned value offset %d\n", func_args_offset-1, func_args_offset-1);
+  printf("STORE // store returned value\n");
+}
 | RETURN PO PF                {}
 ;
 
@@ -444,7 +451,7 @@ exp
 | exp DIV exp                 { $$=op_code($1, 3, $3); }
 | PO exp PF                   { $$=$2; }
 | ID                          { $$=load_func($1); }
-| app                         {}
+| app                         { $$=$1; printf("// Le type de retour de l'appel est %d\n", $1); }
 | NUM                         { $$=INT; printf("LOADI(%i)\n", $1); }
 | DEC                         { $$=FLOAT; printf("LOADF(%f)\n", $1); }
 
@@ -477,6 +484,8 @@ bool_op : AND                 { $$=AND; printf("IFN(Lazy_Else_%d)\n", $<int_valu
 app : fid PO args PF          {
   printf("CALL(pcode_%s)\n", $<string_value>1);
   printf("RESTOREBP\n");
+  //$$=$1;
+  printf("// La valeur de $$ est %d\n", $$);
 }
 ;
 
@@ -486,6 +495,9 @@ fid : ID                      {
   if (func->type == INT) { printf("LOADI(0)\n"); }
   else if (func->type == FLOAT) { printf("LOADF(0.0)\n"); }
   printf("// loading function %s arguments\n", $<string_value>1);
+  //$<int_value>-1=5;
+  printf("// The function's return type is %d\n", func->type);
+
 }
 
 args :  arglist               {

@@ -1,9 +1,10 @@
-int one(int y, int x) {
-  return 1;
+int plus(int x, int y) {
+  return (x+y);
   }
 
 
+
 void main(){
- int x;
- x = one(5, 98998, 4+5);
+    float z;
+    z = plus(1, 2);
 }
