@@ -1,5 +1,5 @@
 int add_rec(int a, int b) {
-    if (a) return b;
+    if (a < 1) return b;
     else return a;
 }
 
