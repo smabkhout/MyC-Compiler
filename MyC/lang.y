@@ -19,6 +19,7 @@ int current_offset=0; //  offset des variables declarées (hors fonctions)
 int func_args_offset=0; // offset des arguments des fonctions
 int condition_number=0; // pour chaque instruction if/while
 char* current_func_name=NULL; // pour règler le problème de récursion à droite
+int current_argc=0; // nombre de parametres passés à la fonction courante
  
 
 %}
@@ -285,7 +286,6 @@ faf : AF                       {
   --depth;
   printf("}\n");
   current_offset = 1; //pas necessaire puisque les declarations tout le temps au début.
-  printf("// le nombre de parametres pour cette fonction etait %d\n", -func_args_offset);
   func_args_offset = 0;
 }
 ;
@@ -498,6 +498,8 @@ bool_op : AND                 { $$=AND; printf("IFN(Lazy_Else_%d)\n", $<int_valu
 app : fid PO args PF          {
   printf("CALL(pcode_%s)\n", $<string_value>1);
   printf("RESTOREBP\n");
+  printf("DROP(%d) //remove %d fun. parameters from stack\n", current_argc, current_argc);
+  current_argc=0;
 
   attribute func = get_symbol_value($<string_value>1);
   $$=func->type;
@@ -521,8 +523,8 @@ args :  arglist               {
 }
 ;
 
-arglist : arglist VIR exp     {} // récursion gauche pour empiler les arguements de la fonction de gauche à droite
-| exp                         {}
+arglist : arglist VIR exp     { ++current_argc; } // récursion gauche pour empiler les arguements de la fonction de gauche à droite
+| exp                         { ++current_argc; }
 ;
 
 
