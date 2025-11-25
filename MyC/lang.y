@@ -209,8 +209,8 @@ void end_glob_var_decl(){
 %start prog  
 
 // liste de tous les type des attributs des non terminaux que vous voulez manipuler l'attribut (il faudra en ajouter plein ;-) )
-%type <type_value> type exp  typename vlist block app fid fun_head
-%type <string_value> func_name
+%type <type_value> type exp  typename vlist block app fid
+%type <string_value> func_name fun_head
 %type <label_value> bool_op bool_cond if else while
 
 %%
@@ -238,17 +238,12 @@ fun : fun_def                  {}
 | fun_dec                      {}
 ;
 
-fun_dec : type fun_decl_head PV    {}
-;
-
-fun_decl_head : func_name po PF    {}
-| func_name po params PF      {}
+fun_dec : type fun_head PV    {}
 ;
 
 
-
-fun_def : type fun_head fun_body   {}
-;
+fun_def : type fun_head { printf("void pcode_%s() ", $2); } fun_body   {}
+; // mid-rule action
 
 po: PO {
   end_glob_var_decl();  // dirty trick to end function init_glob_var() definition in target code
@@ -258,13 +253,13 @@ po: PO {
 fun_head : func_name po PF            {
   // Pas de déclaration de fonction à l'intérieur de fonctions !
   if (depth>0) yyerror("Function must be declared at top level~!\n");
-  printf("void pcode_%s() ", $1);
+  $$=$1;
   }
 
 | func_name po params PF              {
    // Pas de déclaration de fonction à l'intérieur de fonctions !
   if (depth>0) yyerror("Function must be declared at top level~!\n");
-  printf("void pcode_%s() ", $1);
+  $$=$1;
  }
 
 func_name : ID                  {
@@ -298,10 +293,9 @@ fao : AO                       {
 ;
 faf : AF                       {
   int i;
-  if (current_argc != 0) {
     i=removeLocalSymbols(depth);
     if (i) { yyerror("Erreur lors de la suppression des symboles locaux"); }
-  }  
+  
   --depth;
   printf("}\n");
   current_offset = 1; //pas necessaire puisque les declarations tout le temps au début.

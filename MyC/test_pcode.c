@@ -53,6 +53,7 @@ DROP(1) //remove 1 fun. parameters from stack
 LOADBP
 SHIFT(-3) // apply returned value offset -3
 STORE // store returned value
+// Removing variable n at depth 1
 }
 // Argument n of function isOdd in TDS with offset -1
 void pcode_isOdd() {
@@ -92,6 +93,7 @@ DROP(1) //remove 1 fun. parameters from stack
 LOADBP
 SHIFT(-2) // apply returned value offset -2
 STORE // store returned value
+// Removing variable n at depth 1
 }
 void pcode_main() {
 // Declare result of type int with offset 1 at depth 1
@@ -110,4 +112,5 @@ LOADBP
 SHIFT(1) // applying offset 1 of variable result
 // Storing variable result (right) value
 STORE
+// Removing variable result at depth 1
 }
