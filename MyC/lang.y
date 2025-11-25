@@ -169,9 +169,9 @@ void aff_func(char* symbol, int exp_type) {
           step++;
         }
     }
-    if (att->offset != 0){
-        printf("SHIFT(%d) // applying offset %d of variable %s\n", att->offset, att->offset, symbol);
-    }
+    //if (att->offset != 0){
+    //    printf("SHIFT(%d) // applying offset %d of variable %s\n", att->offset, att->offset, symbol);
+    //} unnecessary for global variables
   } else if (att->depth > 0 && depth >= att->depth) { // on esssaie d'acceder à une variable dans notre portée
     printf("// Loading local var %s adress declared at depth %d (used at depth %d)\n", symbol, att->depth, depth);
     int step = att->depth;
@@ -419,8 +419,9 @@ elsop : else inst              { printf("End_%d:\n", $<label_value>-2); }
 
 
 bool_cond : PO exp PF         {
+  $$=$2;
   printf("IFN(False_%d)\n// la condition %d est vraie\n", $<label_value>0, $<label_value>0);
-  if ($$==OR) printf("Lazy_Then_%d:\n", $<label_value>0);
+  if ($<label_value>2==OR) printf("Lazy_Then_%d:\n", $<label_value>0);
   }
 ;
 
@@ -428,6 +429,7 @@ if : IF                       { $$=condition_number++; printf("// Debut conditio
 ;
 
 else : ELSE                   {
+  $$=$<label_value>-1;
   printf("GOTO(End_%d)\n", $<label_value>-2);
   if ($$==AND) printf("Lazy_Else_%d:\n", $<label_value>-2);
   printf("False_%d:\n// la condition %d est fausse\n", $<label_value>-2, $<label_value>-2);

@@ -1,14 +1,11 @@
-int u, v, w;
+int x, y;
 
-int addRec(int a, int b) {
-    if (a == 0) return b;
-    else return addRec(a-1,b+1);
+int factorialRec(int n){
+    if (n == 1) return 1;
+    else return n*factorialRec(n-1);
 }
 
 void main () {
-    int x;
-    x = addRec(7, 8);
-
-    w;
-    5;
+    x = 5;
+    y = factorialRec(x);
 }

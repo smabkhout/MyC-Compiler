@@ -12,95 +12,81 @@ return stack[sp-1].int_value;
 
 
 void init_glob_var(){
-// Declare u of type int with offset 0 at depth 0
+// Declare x of type int with offset 0 at depth 0
 LOADI(0)
 
-// Declare v of type int with offset 1 at depth 0
-LOADI(0)
-
-// Declare w of type int with offset 2 at depth 0
+// Declare y of type int with offset 1 at depth 0
 LOADI(0)
 
 }
 
-// Argument b of function addRec in TDS with offset -1
-// Argument a of function addRec in TDS with offset -2
-void pcode_addRec() {
+// Argument n of function factorialRec in TDS with offset -1
+void pcode_factorialRec() {
 // Debut conditionelle 0
-// Loading local var a adress declared at depth 1 (used at depth 1)
+// Loading local var n adress declared at depth 1 (used at depth 1)
 LOADBP
-SHIFT(-2) // applying offset -2 of variable a
-// Loading variable a (right) value
+SHIFT(-1) // applying offset -1 of variable n
+// Loading variable n (right) value
 LOAD
-LOADI(0)
+LOADI(1)
 EQI
 IFN(False_0)
 // la condition 0 est vraie
-// Loading local var b adress declared at depth 1 (used at depth 1)
-LOADBP
-SHIFT(-1) // applying offset -1 of variable b
-// Loading variable b (right) value
-LOAD
+LOADI(1)
 // Loading function return address
 LOADBP
-SHIFT(-3) // apply returned value offset -3
+SHIFT(-2) // apply returned value offset -2
 STORE // store returned value
 GOTO(End_0)
 False_0:
 // la condition 0 est fausse
+// Loading local var n adress declared at depth 1 (used at depth 1)
+LOADBP
+SHIFT(-1) // applying offset -1 of variable n
+// Loading variable n (right) value
+LOAD
 // loading default returned value
 LOADI(0)
-// loading function addRec arguments
-// Loading local var a adress declared at depth 1 (used at depth 1)
+// loading function factorialRec arguments
+// Loading local var n adress declared at depth 1 (used at depth 1)
 LOADBP
-SHIFT(-2) // applying offset -2 of variable a
-// Loading variable a (right) value
+SHIFT(-1) // applying offset -1 of variable n
+// Loading variable n (right) value
 LOAD
 LOADI(1)
 SUBI
-// Loading local var b adress declared at depth 1 (used at depth 1)
-LOADBP
-SHIFT(-1) // applying offset -1 of variable b
-// Loading variable b (right) value
-LOAD
-LOADI(1)
-ADDI
 SAVEBP
-CALL(pcode_addRec)
+CALL(pcode_factorialRec)
 RESTOREBP
-DROP(2) //remove 2 fun. parameters from stack
+DROP(1) //remove 1 fun. parameters from stack
+MULTI
 // Loading function return address
 LOADBP
-SHIFT(-3) // apply returned value offset -3
+SHIFT(-2) // apply returned value offset -2
 STORE // store returned value
 End_0:
 // Fin conditionelle 0
-// Removing variable a at depth 1
-// Removing variable b at depth 1
+// Removing variable n at depth 1
 }
 void pcode_main() {
-// Declare x of type int with offset 1 at depth 1
-LOADI(0)
-
-// loading default returned value
-LOADI(0)
-// loading function addRec arguments
-LOADI(7)
-LOADI(8)
-SAVEBP
-CALL(pcode_addRec)
-RESTOREBP
-DROP(2) //remove 2 fun. parameters from stack
-// Loading local var x adress declared at depth 1 (used at depth 1)
-LOADBP
-SHIFT(1) // applying offset 1 of variable x
+LOADI(5)
+// Loading global var x adress (used at depth 1)
+LOADI(0) // loading offset 0 of variable x
 // Storing variable x (right) value
 STORE
-// Loading global var w adress (used at depth 1)
-LOADI(2) // loading offset 2 of variable w
-SHIFT(2) // applying offset 2 of variable w
-// Loading variable w (right) value
+// loading default returned value
+LOADI(0)
+// loading function factorialRec arguments
+// Loading global var x adress (used at depth 1)
+LOADI(0) // loading offset 0 of variable x
+// Loading variable x (right) value
 LOAD
-LOADI(5)
-// Removing variable x at depth 1
+SAVEBP
+CALL(pcode_factorialRec)
+RESTOREBP
+DROP(1) //remove 1 fun. parameters from stack
+// Loading global var y adress (used at depth 1)
+LOADI(1) // loading offset 1 of variable y
+// Storing variable y (right) value
+STORE
 }
