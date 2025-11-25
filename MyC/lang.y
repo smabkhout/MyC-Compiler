@@ -242,7 +242,10 @@ fun_dec : type fun_decl_head PV    {}
 ;
 
 fun_decl_head : func_name po PF    {}
+| func_name po params PF      {}
 ;
+
+
 
 fun_def : type fun_head fun_body   {}
 ;
@@ -263,7 +266,6 @@ fun_head : func_name po PF            {
   if (depth>0) yyerror("Function must be declared at top level~!\n");
   printf("void pcode_%s() ", $1);
  }
-;
 
 func_name : ID                  {
   $$=$<string_value>1;
