@@ -1,7 +1,7 @@
-int x,y;
+int x, y;
+float z;
 void main(){
-x=3;
-y=5;
-if (x < y) x=y;
-x;
+x=5;
+y=9;
+z = x + y;
 }

@@ -1,0 +1,17 @@
+int findI(int target) {
+    int i;
+    i = 1;
+    {  
+        int u;
+        if (i == target) {
+            return i;  
+        } else {
+            return u;
+        }
+    }
+}
+
+void main() {
+    int found;
+    found = findI(7);  
+}

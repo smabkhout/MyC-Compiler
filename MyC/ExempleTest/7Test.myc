@@ -1,0 +1,13 @@
+int i, total;
+
+void main() {
+    i = 0;
+    total = 0;
+    
+    while (i < 10) {
+        if ((i + 2) == 0) { 
+            total = total + i;
+        }
+        i = i + 1;
+    }
+}

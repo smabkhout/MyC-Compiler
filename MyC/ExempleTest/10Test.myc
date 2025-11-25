@@ -1,0 +1,8 @@
+void getConstant() {
+     42;
+}
+
+void main() {
+    int result;
+    result = getConstant();
+}

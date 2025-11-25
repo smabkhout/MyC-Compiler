@@ -1,13 +1,7 @@
 
-int x, y;
-float z, t;
-float pi;
-
 void main(){
-   x;
-   x + y;
-   x = 5;
-   y = 6;
-   t = 3;
-   z = t + x + y;
+   1.5;
+   3.6+9.4;
+   1.5+2;
+   -5*3.6;
 }

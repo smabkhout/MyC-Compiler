@@ -15,19 +15,13 @@ void init_glob_var(){
 }
 
 void pcode_main() {
-LOADI(1)
-LOADI(2)
-MULTI
-LOADF(3.500000)
-LOADI(4)
-I2F2 // converting second arg to float
-MULTF
-I2F1 // converting first arg to float
-ADDF
-LOADI(2)
-MINUSI
-LOADI(7)
-LOADI(1)
+LOADI(410)
+LOADI(6)
+LOADI(9)
 ADDI
+LOADI(8)
+LOADI(6)
 MULTI
+LOADI(9)
+MINUSI
 }

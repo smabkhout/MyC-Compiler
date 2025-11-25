@@ -1,8 +1,12 @@
-int x,y;
+int a, b, max;
 
 void main() {
-    x = 5;
-    while (x > 0) {
-        x = x - 1;
+    a = 8;
+    b = 12;
+    
+    if (a > b) {
+        max = a;
+    } else {
+        max = b;
     }
 }
