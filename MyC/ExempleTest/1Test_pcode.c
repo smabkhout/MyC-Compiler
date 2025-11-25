@@ -15,7 +15,6 @@ void init_glob_var(){
 }
 
 void pcode_main() {
-// Entering function block of depth 1
 LOADI(1)
 LOADI(2)
 MULTI
@@ -23,17 +22,6 @@ LOADF(3.500000)
 LOADI(4)
 I2F2 // converting second arg to float
 MULTF
-<<<<<<< HEAD
 I2F1 // converting first arg to float
 ADDF
-LOADI(2)
-MINUSI
-LOADI(7)
-LOADI(1)
-ADDI
-MULTI
-=======
-ADDI
->>>>>>> refs/remotes/origin/master
-// Exiting function block of depth 1
-}
+syntax error
