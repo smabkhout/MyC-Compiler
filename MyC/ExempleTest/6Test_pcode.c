@@ -21,11 +21,9 @@ LOADI(0)
 }
 
 void pcode_main() {
-// Entering function block of depth 1
 // Debut conditionelle 0
 // Loading global var x adress (used at depth 1)
 LOADI(1) // loading offset 1 of variable x
-SHIFT(1) // applying offset 1 of variable x
 // Loading variable x (right) value
 LOAD
 LOADI(0)
@@ -55,7 +53,10 @@ LOAD
 LOADI(1)
 ADDI
 // Loading global var y adress (used at depth 3)
-LOADI(0) // loading offset 0 of variable y
+LOADBP
+LOAD // accessing upper block depth 2
+LOAD // accessing upper block depth 1
+LOAD // accessing upper block depth 0
 // Storing variable y (right) value
 STORE
 RESTOREBP // Exiting instructions block of depth 3
@@ -66,5 +67,4 @@ RESTOREBP // Exiting instructions block of depth 2
 False_0:
 // la condition 0 est fausse
 // Fin conditionelle 0
-// Exiting function block of depth 1
 }

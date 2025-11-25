@@ -24,4 +24,10 @@ I2F2 // converting second arg to float
 MULTF
 I2F1 // converting first arg to float
 ADDF
-syntax error
+LOADI(2)
+MINUSI
+LOADI(7)
+LOADI(1)
+ADDI
+MULTI
+}

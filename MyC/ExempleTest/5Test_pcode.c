@@ -21,7 +21,6 @@ LOADI(0)
 }
 
 void pcode_main() {
-// Entering function block of depth 1
 LOADI(5)
 // Loading global var x adress (used at depth 1)
 LOADI(0) // loading offset 0 of variable x
@@ -46,12 +45,13 @@ LOAD
 LOADI(1)
 SUBI
 // Loading global var x adress (used at depth 2)
-LOADI(0) // loading offset 0 of variable x
+LOADBP
+LOAD // accessing upper block depth 1
+LOAD // accessing upper block depth 0
 // Storing variable x (right) value
 STORE
 RESTOREBP // Exiting instructions block of depth 2
 GOTO(StartLoop_0)
 // Fin boucle while 0
 EndLoop_0:
-// Exiting function block of depth 1
 }
