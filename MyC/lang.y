@@ -5,6 +5,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#define DECALARATION 808080
+#define DEFINITION   808081
   
 extern int yylex();
 extern int yyparse();
@@ -206,8 +209,8 @@ void end_glob_var_decl(){
 %start prog  
 
 // liste de tous les type des attributs des non terminaux que vous voulez manipuler l'attribut (il faudra en ajouter plein ;-) )
-%type <type_value> type exp  typename vlist block app fid
-%type <string_value> fun_head func_name
+%type <type_value> type exp  typename vlist block app fid fun_head
+%type <string_value> func_name
 %type <label_value> bool_op bool_cond if else while
 
 %%
@@ -226,12 +229,22 @@ glob_var_list : glob_var_list decl PV {}
 ;
 
 glob_fun_list : glob_fun_list fun {}
-| fun {}
+| fun                             {}
 ;
 
 // I. Functions
 
-fun : type fun_head fun_body   {}
+fun : fun_def                  {}
+| fun_dec                      {}
+;
+
+fun_dec : type fun_decl_head PV    {}
+;
+
+fun_decl_head : func_name po PF    {}
+;
+
+fun_def : type fun_head fun_body   {}
 ;
 
 po: PO {
@@ -282,8 +295,11 @@ fao : AO                       {
 }
 ;
 faf : AF                       {
-  int i = removeLocalSymbols(depth);
-  if (i) { yyerror("Erreur lors de la suppression des symboles locaux"); }
+  int i;
+  if (current_argc != 0) {
+    i=removeLocalSymbols(depth);
+    if (i) { yyerror("Erreur lors de la suppression des symboles locaux"); }
+  }  
   --depth;
   printf("}\n");
   current_offset = 1; //pas necessaire puisque les declarations tout le temps au début.
