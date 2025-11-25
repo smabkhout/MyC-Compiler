@@ -14,27 +14,10 @@ return stack[sp-1].int_value;
 void init_glob_var(){
 }
 
-// Argument y of function plus in TDS with offset -1
-// Argument x of function plus in TDS with offset -2
-void pcode_plus() {
-// Declare z of type int with offset 1 at depth 1
-LOADI(0)
-
-// Loading local var x adress declared at depth 1 (used at depth 1)
-LOADBP
-SHIFT(-2) // applying offset -2 of variable x
-// Loading variable x (right) value
-LOAD
-// Loading local var z adress declared at depth 1 (used at depth 1)
-LOADBP
-SHIFT(1) // applying offset 1 of variable z
-// Storing variable z (right) value
-STORE
-LOADI(5)
-// Loading function return address
-LOADBP
-SHIFT(-3) // apply returned value offset -3
-STORE // store returned value
+// Argument y of function min in TDS with offset -1
+// Argument x of function min in TDS with offset -2
+void pcode_min() {
+// Debut conditionelle 0
 // Loading local var x adress declared at depth 1 (used at depth 1)
 LOADBP
 SHIFT(-2) // applying offset -2 of variable x
@@ -45,25 +28,54 @@ LOADBP
 SHIFT(-1) // applying offset -1 of variable y
 // Loading variable y (right) value
 LOAD
-ADDI
+LTI
+IFN(False_0)
+// la condition 0 est vraie
+SAVEBP // Entering instructions block of depth 2
+// Loading local var x adress declared at depth 1 (used at depth 2)
+LOADBP
+LOAD // accessing upper block depth 1
+SHIFT(-2) // applying offset -2 of variable x
+// Loading variable x (right) value
+LOAD
 // Loading function return address
 LOADBP
+LOAD // accessing upper block depth 1
 SHIFT(-3) // apply returned value offset -3
 STORE // store returned value
-// Removing variable z at depth 1
+RESTOREBP // Exiting instructions block of depth 2
+GOTO(End_0)
+False_0:
+// la condition 0 est fausse
+SAVEBP // Entering instructions block of depth 2
+// Loading local var y adress declared at depth 1 (used at depth 2)
+LOADBP
+LOAD // accessing upper block depth 1
+SHIFT(-1) // applying offset -1 of variable y
+// Loading variable y (right) value
+LOAD
+// Loading function return address
+LOADBP
+LOAD // accessing upper block depth 1
+SHIFT(-3) // apply returned value offset -3
+STORE // store returned value
+RESTOREBP // Exiting instructions block of depth 2
+End_0:
+// Fin conditionelle 0
+// Removing variable x at depth 1
+// Removing variable y at depth 1
 }
-
 void pcode_main() {
 // Declare z of type float with offset 1 at depth 1
 LOADF(0.0)
 
 // loading default returned value
 LOADI(0)
-// loading function plus arguments
+// loading function min arguments
 LOADI(1)
 LOADI(2)
 SAVEBP
-CALL(pcode_plus)
+CALL(pcode_min)
 RESTOREBP
 I2F2
 // Loading local var z adress declared at depth 1 (used at depth 1)
@@ -73,4 +85,3 @@ SHIFT(1) // applying offset 1 of variable z
 STORE
 // Removing variable z at depth 1
 }
-

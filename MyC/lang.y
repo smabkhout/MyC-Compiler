@@ -205,7 +205,7 @@ void end_glob_var_decl(){
 
 // liste de tous les type des attributs des non terminaux que vous voulez manipuler l'attribut (il faudra en ajouter plein ;-) )
 %type <type_value> type exp  typename vlist block app fid
-%type <string_value> fun_head
+%type <string_value> fun_head func_name
 %type <label_value> bool_op bool_cond if else while
 
 %%
@@ -237,20 +237,23 @@ po: PO {
   current_func_name=$<string_value>0;
 }
   
-fun_head : ID po PF            {
+fun_head : func_name po PF            {
   // Pas de déclaration de fonction à l'intérieur de fonctions !
   if (depth>0) yyerror("Function must be declared at top level~!\n");
   printf("void pcode_%s() ", $1);
-  add_symbol($1, $<int_value>0, 0);
   }
 
-| ID po params PF              {
+| func_name po params PF              {
    // Pas de déclaration de fonction à l'intérieur de fonctions !
   if (depth>0) yyerror("Function must be declared at top level~!\n");
   printf("void pcode_%s() ", $1);
-  add_symbol($1, $<int_value>0, 0);
  }
 ;
+
+func_name : ID                  {
+  $$=$<string_value>1;
+  add_symbol($1, $<int_value>0, 0);
+}
 
 params: type ID vir params     {
   attribute att = makeSymbol($<int_value>1, --func_args_offset, 1);
@@ -280,7 +283,7 @@ faf : AF                       {
   int i = removeLocalSymbols(depth);
   if (i) { yyerror("Erreur lors de la suppression des symboles locaux"); }
   --depth;
-  printf("}\n\n");
+  printf("}\n");
   current_offset = 1; //pas necessaire puisque les declarations tout le temps au début.
   func_args_offset = 0;
 }
