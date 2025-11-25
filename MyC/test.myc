@@ -8,4 +8,7 @@ int addRec(int a, int b) {
 void main () {
     int x;
     x = addRec(7, 8);
+
+    w;
+    5;
 }

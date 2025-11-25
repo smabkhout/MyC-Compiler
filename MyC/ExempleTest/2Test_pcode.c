@@ -30,7 +30,6 @@ LOADF(0.0)
 }
 
 void pcode_main() {
-// Entering function block of depth 1
 // Loading global var x adress (used at depth 1)
 LOADI(0) // loading offset 0 of variable x
 // Loading variable x (right) value
@@ -52,16 +51,18 @@ STORE
 LOADI(6)
 // Loading global var y adress (used at depth 1)
 LOADI(1) // loading offset 1 of variable y
+SHIFT(1) // applying offset 1 of variable y
 // Storing variable y (right) value
 STORE
 LOADI(3)
 I2F2
 // Loading global var t adress (used at depth 1)
-LOADF(3) // loading offset 3 of variable t
+LOADI(3) // loading offset 3 of variable t
+SHIFT(3) // applying offset 3 of variable t
 // Storing variable t (right) value
 STORE
 // Loading global var t adress (used at depth 1)
-LOADF(3) // loading offset 3 of variable t
+LOADI(3) // loading offset 3 of variable t
 // Loading variable t (right) value
 LOAD
 // Loading global var x adress (used at depth 1)
@@ -77,8 +78,8 @@ LOAD
 I2F2 // converting second arg to float
 ADDF
 // Loading global var z adress (used at depth 1)
-LOADF(2) // loading offset 2 of variable z
+LOADI(2) // loading offset 2 of variable z
+SHIFT(2) // applying offset 2 of variable z
 // Storing variable z (right) value
 STORE
-// Exiting function block of depth 1
 }

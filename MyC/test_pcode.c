@@ -12,6 +12,15 @@ return stack[sp-1].int_value;
 
 
 void init_glob_var(){
+// Declare u of type int with offset 0 at depth 0
+LOADI(0)
+
+// Declare v of type int with offset 1 at depth 0
+LOADI(0)
+
+// Declare w of type int with offset 2 at depth 0
+LOADI(0)
+
 }
 
 // Argument b of function addRec in TDS with offset -1
@@ -87,5 +96,11 @@ LOADBP
 SHIFT(1) // applying offset 1 of variable x
 // Storing variable x (right) value
 STORE
+// Loading global var w adress (used at depth 1)
+LOADI(2) // loading offset 2 of variable w
+SHIFT(2) // applying offset 2 of variable w
+// Loading variable w (right) value
+LOAD
+LOADI(5)
 // Removing variable x at depth 1
 }
