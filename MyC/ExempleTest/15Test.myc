@@ -1,9 +1,24 @@
-int addRec(int a, int b) {
-    if (a == 0) return b;
-    else return addRec(a-1,b+1);
+int isEven(int n);
+int isOdd(int n);
+
+int isEven(int n) {
+    if (n == 0) {
+        return 1;
+    } else {
+        return isOdd(n - 1); 
+    }
 }
 
-void main () {
-    int x;
-    x = addRec(7, 8);
+int isOdd(int n) {
+    if (n == 0) {
+        return 0;
+    } else {
+        return isEven(n - 1);  
+    }
+}
+
+void main() {
+    int e, o;
+    e = isEven(4);  
+    o = isOdd(4);   
 }
