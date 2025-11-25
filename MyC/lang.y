@@ -285,6 +285,7 @@ faf : AF                       {
   --depth;
   printf("}\n");
   current_offset = 1; //pas necessaire puisque les declarations tout le temps au début.
+  printf("// le nombre de parametres pour cette fonction etait %d\n", -func_args_offset);
   func_args_offset = 0;
 }
 ;
