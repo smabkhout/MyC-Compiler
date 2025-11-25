@@ -238,7 +238,7 @@ fun : fun_def                  {}
 | fun_dec                      {}
 ;
 
-fun_dec : type fun_head PV    { printf("// First declaration of function %s\n", $2); }
+fun_dec : type fun_head PV    { printf("// First declaration of function pcode_%s\n", $2); removeLocalSymbols(1); }
 ;
 
 

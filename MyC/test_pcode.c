@@ -15,6 +15,8 @@ void init_glob_var(){
 }
 
 // Argument n of function isOdd in TDS with offset -1
+// First declaration of function pcode_isOdd
+// Removing variable n at depth 1
 // Argument n of function isEven in TDS with offset -2
 void pcode_isEven() {
 // Debut conditionelle 0
