@@ -17,29 +17,24 @@ void init_glob_var(){
 // Argument y of function plus in TDS with offset -1
 // Argument x of function plus in TDS with offset -2
 void pcode_plus() {
-// Debut conditionelle 0
-LOADI(1)
-IFN(False_0)
-// la condition 0 est vraie
-LOADI(2)
-GOTO(End_0)
-False_0:
-// la condition 0 est fausse
-SAVEBP // Entering instructions block of depth 2
-LOADI(5)
-// Loading local var x adress declared at depth 1 (used at depth 2)
+// Declare z of type int with offset 1 at depth 1
+LOADI(0)
+
+// Loading local var x adress declared at depth 1 (used at depth 1)
 LOADBP
-LOAD // accessing upper block depth 1
 SHIFT(-2) // applying offset -2 of variable x
 // Loading variable x (right) value
 LOAD
+// Loading local var z adress declared at depth 1 (used at depth 1)
+LOADBP
+SHIFT(1) // applying offset 1 of variable z
+// Storing variable z (right) value
+STORE
+LOADI(5)
 // Loading function return address
 LOADBP
 SHIFT(-3) // apply returned value offset -3
 STORE // store returned value
-RESTOREBP // Exiting instructions block of depth 2
-End_0:
-// Fin conditionelle 0
 // Loading local var x adress declared at depth 1 (used at depth 1)
 LOADBP
 SHIFT(-2) // applying offset -2 of variable x
@@ -55,6 +50,7 @@ ADDI
 LOADBP
 SHIFT(-3) // apply returned value offset -3
 STORE // store returned value
+// Removing variable z at depth 1
 }
 
 void pcode_main() {

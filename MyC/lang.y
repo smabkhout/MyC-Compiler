@@ -384,11 +384,20 @@ aff : ID EQ exp               {
 // IV.2 Return
 ret : RETURN exp              {
   printf("// Loading function return address\nLOADBP\n");
+  if (depth > 1) {
+    int step = 1;
+    while (step < depth){
+      printf("LOAD // accessing upper block depth %d\n", depth-step);
+      step++;
+    }
+  }
+
   printf("SHIFT(%d) // apply returned value offset %d\n", func_args_offset-1, func_args_offset-1);
   printf("STORE // store returned value\n");
 }
 | RETURN PO PF                {}
 ;
+
 
 // IV.3. Conditionelles
 //           N.B. ces rêgles génèrent un conflit déclage reduction

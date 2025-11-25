@@ -1,11 +1,9 @@
 int plus(int x, int y) {
-    if (1) 2; else {
-        5;
-        return x;
-    }
-
+        int z;
+        z = x;
+        return 5;
     return (x+y);
-  }
+}
 
 
 
