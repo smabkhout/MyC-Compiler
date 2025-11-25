@@ -1,3 +1,5 @@
+int u, v, w;
+
 int addRec(int a, int b) {
     if (a == 0) return b;
     else return addRec(a-1,b+1);
