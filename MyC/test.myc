@@ -1,20 +1,9 @@
-float intMult (int x, float y) {
-   float z;
-   int n;
-   z = 0;
-      if (x < 0) n = -x;
-   else n = x;
-   while (n > 0) {
-      z = z +y;
-      n = n-1;
-   }
-   if (x < 0) return -z;
-   else return z;
+int add_rec(int a, int b) {
+    if (a) return b;
+    else return a;
 }
 
-
 void main () {
-float z;
-z = intMult(4,2.3);
-
+    int x;
+    x = add_rec(7, 8)
 }
