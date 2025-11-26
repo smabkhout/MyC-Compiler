@@ -411,6 +411,7 @@ ret : RETURN exp              {
 
   printf("SHIFT(%d) // apply returned value offset %d\n", func_args_offset-1, func_args_offset-1);
   printf("STORE // store returned value\n");
+  for (int i=1; i<depth-1; ++i) { printf("RESTOREBP // Exiting instructions block of depth %d before return()\n", depth-i); }
   printf("return ()\n");
 }
 | RETURN PO PF                {}
