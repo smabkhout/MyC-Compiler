@@ -238,7 +238,7 @@ fun : fun_def                  {}
 | fun_dec                      {}
 ;
 
-fun_dec : type fun_head PV    { printf("// First declaration of function pcode_%s\n", $2); removeLocalSymbols(1); }
+fun_dec : type fun_head PV    { printf("void pcode_%s(); // First declaration of function pcode_%s\n", $2, $2); removeLocalSymbols(1); }
 ;
 
 
@@ -411,6 +411,7 @@ ret : RETURN exp              {
 
   printf("SHIFT(%d) // apply returned value offset %d\n", func_args_offset-1, func_args_offset-1);
   printf("STORE // store returned value\n");
+  printf("return ()\n");
 }
 | RETURN PO PF                {}
 ;

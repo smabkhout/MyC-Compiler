@@ -15,7 +15,7 @@ void init_glob_var(){
 }
 
 // Argument n of function isOdd in TDS with offset -1
-// First declaration of function pcode_isOdd
+void pcode_isOdd(); // First declaration of function pcode_isOdd
 // Removing variable n at depth 1
 // Argument n of function isEven in TDS with offset -2
 void pcode_isEven() {
@@ -34,6 +34,7 @@ LOADI(1)
 LOADBP
 SHIFT(-3) // apply returned value offset -3
 STORE // store returned value
+return ()
 False_0:
 // la condition 0 est fausse
 // Fin conditionelle 0
@@ -55,6 +56,7 @@ DROP(1) //remove 1 fun. parameters from stack
 LOADBP
 SHIFT(-3) // apply returned value offset -3
 STORE // store returned value
+return ()
 // Removing variable n at depth 1
 }
 // Argument n of function isOdd in TDS with offset -1
@@ -74,6 +76,7 @@ LOADI(0)
 LOADBP
 SHIFT(-2) // apply returned value offset -2
 STORE // store returned value
+return ()
 False_1:
 // la condition 1 est fausse
 // Fin conditionelle 1
@@ -95,6 +98,7 @@ DROP(1) //remove 1 fun. parameters from stack
 LOADBP
 SHIFT(-2) // apply returned value offset -2
 STORE // store returned value
+return ()
 // Removing variable n at depth 1
 }
 void pcode_main() {
