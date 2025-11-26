@@ -1,20 +1,6 @@
-int add(int x, int y){
-    x;
-    y;
-    return x+y;
-}
-
-float multiply(int a, int b){
-    a;
-    b;
-    {{{{{{
-        return a*b;
-    }}}}}}
-    return a*b;
-}
+int x;
 
 
 void main() {
-    int result;
-    result = add(multiply(2,3), multiply(4,5));
+    x(); 
 }

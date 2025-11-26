@@ -33,6 +33,7 @@ attribute makeSymbol(int type, int offset, int depth)
   r -> type = type;
   r -> offset = offset;
   r -> depth = depth;
+  // r -> symb_type = symb_type; //selon si le symbole represente une variable ou une fonction
   return r;
 }
 
