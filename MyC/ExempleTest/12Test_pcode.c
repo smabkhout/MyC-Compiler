@@ -59,6 +59,8 @@ LOAD // accessing upper block depth 2
 LOAD // accessing upper block depth 1
 SHIFT(-2) // apply returned value offset -2
 STORE // store returned value
+RESTOREBP // Exiting instructions block of depth 2 before return()
+return ()
 RESTOREBP // Exiting instructions block of depth 3
 GOTO(End_0)
 False_0:
@@ -76,11 +78,15 @@ LOAD // accessing upper block depth 2
 LOAD // accessing upper block depth 1
 SHIFT(-2) // apply returned value offset -2
 STORE // store returned value
+RESTOREBP // Exiting instructions block of depth 2 before return()
+return ()
 RESTOREBP // Exiting instructions block of depth 3
 End_0:
 // Fin conditionelle 0
 // Removing variable u at depth 2
 RESTOREBP // Exiting instructions block of depth 2
+// Removing variable i at depth 1
+// Removing variable target at depth 1
 }
 void pcode_main() {
 // Declare found of type int with offset 1 at depth 1
@@ -99,4 +105,5 @@ LOADBP
 SHIFT(1) // applying offset 1 of variable found
 // Storing variable found (right) value
 STORE
+// Removing variable found at depth 1
 }

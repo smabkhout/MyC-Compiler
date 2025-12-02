@@ -33,6 +33,7 @@ LOADBP
 LOAD // accessing upper block depth 1
 SHIFT(-2) // apply returned value offset -2
 STORE // store returned value
+return ()
 RESTOREBP // Exiting instructions block of depth 2
 GOTO(End_0)
 False_0:
@@ -65,6 +66,7 @@ LOADBP
 LOAD // accessing upper block depth 1
 SHIFT(-2) // apply returned value offset -2
 STORE // store returned value
+return ()
 RESTOREBP // Exiting instructions block of depth 2
 End_0:
 // Fin conditionelle 0

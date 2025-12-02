@@ -26,9 +26,11 @@ LOADI(0)
 SAVEBP
 CALL(pcode_getConstant)
 RESTOREBP
+DROP(0) //remove 0 fun. parameters from stack
 // Loading local var result adress declared at depth 1 (used at depth 1)
 LOADBP
 SHIFT(1) // applying offset 1 of variable result
 // Storing variable result (right) value
 STORE
+// Removing variable result at depth 1
 }

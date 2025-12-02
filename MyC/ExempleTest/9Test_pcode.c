@@ -55,5 +55,7 @@ LOAD // accessing upper block depth 1
 LOAD // accessing upper block depth 0
 // Storing variable global (right) value
 STORE
+// Removing variable b at depth 2
 RESTOREBP // Exiting instructions block of depth 2
+// Removing variable a at depth 1
 }

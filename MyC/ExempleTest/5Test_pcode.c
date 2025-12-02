@@ -32,7 +32,6 @@ STORE
 LOADI(12)
 // Loading global var b adress (used at depth 1)
 LOADI(1) // loading offset 1 of variable b
-SHIFT(1) // applying offset 1 of variable b
 // Storing variable b (right) value
 STORE
 // Debut conditionelle 0
@@ -42,7 +41,6 @@ LOADI(0) // loading offset 0 of variable a
 LOAD
 // Loading global var b adress (used at depth 1)
 LOADI(1) // loading offset 1 of variable b
-SHIFT(1) // applying offset 1 of variable b
 // Loading variable b (right) value
 LOAD
 GTI

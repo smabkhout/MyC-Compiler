@@ -32,7 +32,6 @@ STORE
 LOADI(9)
 // Loading global var y adress (used at depth 1)
 LOADI(1) // loading offset 1 of variable y
-SHIFT(1) // applying offset 1 of variable y
 // Storing variable y (right) value
 STORE
 // Loading global var x adress (used at depth 1)
@@ -41,14 +40,12 @@ LOADI(0) // loading offset 0 of variable x
 LOAD
 // Loading global var y adress (used at depth 1)
 LOADI(1) // loading offset 1 of variable y
-SHIFT(1) // applying offset 1 of variable y
 // Loading variable y (right) value
 LOAD
 ADDI
 I2F2
 // Loading global var z adress (used at depth 1)
 LOADI(2) // loading offset 2 of variable z
-SHIFT(2) // applying offset 2 of variable z
 // Storing variable z (right) value
 STORE
 }

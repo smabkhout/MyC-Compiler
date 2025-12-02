@@ -29,7 +29,6 @@ STORE
 LOADI(0)
 // Loading global var sum adress (used at depth 1)
 LOADI(1) // loading offset 1 of variable sum
-SHIFT(1) // applying offset 1 of variable sum
 // Storing variable sum (right) value
 STORE
 StartLoop_0: // chargement condition boucle while 0

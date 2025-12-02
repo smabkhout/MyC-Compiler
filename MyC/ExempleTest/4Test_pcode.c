@@ -29,7 +29,6 @@ STORE
 LOADI(10)
 // Loading global var y adress (used at depth 1)
 LOADI(1) // loading offset 1 of variable y
-SHIFT(1) // applying offset 1 of variable y
 // Storing variable y (right) value
 STORE
 // Debut conditionelle 0
@@ -39,7 +38,6 @@ LOADI(0) // loading offset 0 of variable x
 LOAD
 // Loading global var y adress (used at depth 1)
 LOADI(1) // loading offset 1 of variable y
-SHIFT(1) // applying offset 1 of variable y
 // Loading variable y (right) value
 LOAD
 LTI

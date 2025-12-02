@@ -217,7 +217,7 @@ void end_glob_var_decl(){
 // liste de tous les type des attributs des non terminaux que vous voulez manipuler l'attribut (il faudra en ajouter plein ;-) )
 %type <type_value> type exp  typename vlist block app fid
 %type <string_value> func_name fun_head
-%type <label_value> bool_op bool_cond if else while
+%type <label_value> bool_cond if else while
 
 %%
 
@@ -441,7 +441,6 @@ elsop : else inst              { printf("End_%d:\n", $<label_value>-2); }
 bool_cond : PO exp PF         {
   $$=$2;
   printf("IFN(False_%d)\n// la condition %d est vraie\n", $<label_value>0, $<label_value>0);
-  if ($<label_value>2==OR) printf("Lazy_Then_%d:\n", $<label_value>0);
   }
 ;
 
@@ -451,7 +450,6 @@ if : IF                       { $$=condition_number++; printf("// Debut conditio
 else : ELSE                   {
   $$=$<label_value>-1;
   printf("GOTO(End_%d)\n", $<label_value>-2);
-  if ($$==AND) printf("Lazy_Else_%d:\n", $<label_value>-2);
   printf("False_%d:\n// la condition %d est fausse\n", $<label_value>-2, $<label_value>-2);
   }
 ;
@@ -500,19 +498,8 @@ exp
 | exp SUP exp                 { $$=op_code($1, 5, $3); }
 | exp EQUAL exp               { $$=op_code($1, 6, $3); } //improvisées à cause du manque des exemples
 | exp DIFF exp                { $$=op_code($1, 7, $3); }
-| exp bool_op exp             {
-  $$=$<label_value>2;
-  if ($<label_value>2 == AND) {
-    // $$=op_code($1, 8, $3); // no need for ANDI if we are using lazy eval
-  } else if ($<label_value>2 == OR) {
-    // $$=op_code($1, 9, $3); // same
-  }
-  } //à modifier pour implémenter la gestion des Booléens paresseuse
-
-;
-
-bool_op : AND                 { $$=AND; printf("IFN(Lazy_Else_%d)\n", $<int_value>-2); } 
-| OR                          { $$=OR; printf("IFN(Skip_%d)\nGOTO(Lazy_Then_%d) //evaluation paresseuse\nSkip_%d:\n", $<int_value>-2, $<int_value>-2, $<int_value>-2); }
+| exp AND exp                 { $$=op_code($1, 8, $3); }
+| exp OR exp                  { $$=op_code($1, 9, $3); }
 ;
 
 // V.3 Applications de fonctions

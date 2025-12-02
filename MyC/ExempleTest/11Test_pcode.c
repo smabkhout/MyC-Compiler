@@ -32,6 +32,9 @@ MULTI
 LOADBP
 SHIFT(-3) // apply returned value offset -3
 STORE // store returned value
+return ()
+// Removing variable a at depth 1
+// Removing variable b at depth 1
 }
 // Argument y of function add in TDS with offset -1
 // Argument x of function add in TDS with offset -2
@@ -51,6 +54,9 @@ ADDI
 LOADBP
 SHIFT(-3) // apply returned value offset -3
 STORE // store returned value
+return ()
+// Removing variable x at depth 1
+// Removing variable y at depth 1
 }
 void pcode_main() {
 // Declare product of type int with offset 1 at depth 1
@@ -87,4 +93,6 @@ LOADBP
 SHIFT(2) // applying offset 2 of variable sum
 // Storing variable sum (right) value
 STORE
+// Removing variable sum at depth 1
+// Removing variable product at depth 1
 }
