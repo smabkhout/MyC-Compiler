@@ -94,6 +94,9 @@ int load_func(char *symbol){
           printf("LOAD // accessing upper block depth %d\n", depth-(step-att->depth+1));
           step++;
         }
+        if (att->offset != 0){
+          printf("SHIFT(%d) // applying offset %d of variable %s\n", att->offset, att->offset, symbol);
+        }
     }
     //if (att->offset != 0){
     //    printf("SHIFT(%d) // applying offset %d of variable %s\n", att->offset, att->offset, symbol);
@@ -170,6 +173,9 @@ void aff_func(char* symbol, int exp_type) {
         while (step < depth){
           printf("LOAD // accessing upper block depth %d\n", depth-(step-att->depth+1));
           step++;
+        }
+        if (att->offset != 0){
+          printf("SHIFT(%d) // applying offset %d of variable %s\n", att->offset, att->offset, symbol);
         }
     }
     //if (att->offset != 0){

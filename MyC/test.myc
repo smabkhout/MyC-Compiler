@@ -1,6 +1,12 @@
-int x;
+int x, y, z, w;
 
 
 void main() {
-    x(); 
+    x = 3;
+    {
+        int a;
+        a = 4;
+        w = 1;
+        z;
+    } 
 }
